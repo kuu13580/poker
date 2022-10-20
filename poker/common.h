@@ -5,13 +5,14 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <functional>
 
 using namespace std;
 
 extern string marks[];
 extern string numbers[];
+extern string hands[];
 extern const int NUM_PLAYER;
-extern const int INIT_NUM_CARD;
 extern const int NUM_CARDS;
 
 typedef enum
@@ -43,7 +44,7 @@ typedef enum Hand {
 	FullHouse,
 	FourCard,
 	StraightFlush,
-	RoyalStraightFlush,
+	RoyalFlush,
 }Hand;
 
 #endif //  _H_COMMON_

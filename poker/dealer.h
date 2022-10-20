@@ -4,12 +4,14 @@
 class CDealer {
 private:
 	// 以下のチェックでは約無しで-1を返す
-	int isFlush(vector<Card>& hand);
-	int isStraight(vector<int> hand);
+	// チェック時は数字は降順ソート必須
+	vector<int> isFlush(vector<Card>& hand, vector<int> hand_numbers);
+	vector<int> isStraight(vector<int> hand_numbers);
+	vector<int> isPair(vector<int> hand_numbers);
 public:
-	// コンストラクタ
 	// 役チェック 役の最強札を返す
-	Hand checkHand(vector<Card> hand);
+	vector<int> checkHand(vector<Card> hand);
+	void viewHand(vector<Card> hand);
 };
 
 #endif // _H_DEALER_
