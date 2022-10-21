@@ -30,7 +30,7 @@ int main() {
 	}
 
 	CDealer dealer;
-	vector<Card> test = { {Hearts, 9},{Hearts, 10},{Hearts, 11},{Hearts, 12},{Hearts, 13} };
+	vector<Card> test = { {Hearts, 2},{Hearts, 3},{Hearts, 4},{Hearts, 5},{Hearts, 14} };
 	dealer.viewHand(test);
 
 }

@@ -11,6 +11,7 @@ private:
 public:
 	// 役チェック 役の最強札を返す
 	vector<int> checkHand(vector<Card> hand);
+	// 役を表示する
 	void viewHand(vector<Card> hand);
 };
 

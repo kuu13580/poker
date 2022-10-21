@@ -18,6 +18,7 @@ vector<int> CDealer::checkHand(vector<Card> hand) {
 		vector<int> power_straight;
 		power_flush = isFlush(hand, hand_numbers);
 		power_straight = isStraight(hand_numbers);
+
 		if (power_flush.at(0) > 0 && power_straight.at(0) > 0) {
 			if (power_straight.at(1) == 14) {
 				return { RoyalFlush };
@@ -39,6 +40,7 @@ vector<int> CDealer::checkHand(vector<Card> hand) {
 vector<int> CDealer::isFlush(vector<Card>& hand, vector<int> hand_numbers) {
 	bool result = true;
 	for (int i = 0; i < hand.size() - 1; i++) {
+		// 隣り合うスートが異なる場合フラッシュでない
 		if (hand.at(i).suit != hand.at(i + 1).suit) {
 			result = false;
 		}
@@ -46,6 +48,7 @@ vector<int> CDealer::isFlush(vector<Card>& hand, vector<int> hand_numbers) {
 	if (result) {
 		vector<int> v;
 		v.push_back(Flush);
+		// 数字が大きい順にキーカード
 		for (int i = 0; i < 5; i++) {
 			v.push_back(hand_numbers.at(i));
 		}
@@ -61,6 +64,7 @@ vector<int> CDealer::isFlush(vector<Card>& hand, vector<int> hand_numbers) {
 vector<int> CDealer::isStraight(vector<int> hand_numbers) {
 	bool result = true;
 	for (int i = 0; i < 4; i++) {
+		// 数字が連続でない場合ストレートではない
 		if (hand_numbers.at(i) - 1 != hand_numbers.at(i + 1)) {
 			result = false;
 		}
@@ -69,14 +73,18 @@ vector<int> CDealer::isStraight(vector<int> hand_numbers) {
 		return { Straight, hand_numbers.front() };
 	}
 	else {
+		vector<int> weak_straight = { 14,5,4,3,2 };
+		if (hand_numbers == weak_straight) {
+			return { Straight, 5 };
+		}
 		return { -1 };
 	}
 }
 
 //ペアチェック
 vector<int> CDealer::isPair(vector<int> hand_numbers) {
+	// 比較成功回数を調べる
 	int count = 0;
-
 	for (int i = 0; i < 5; i++) {
 		for (int j = 0; j < i; j++) {
 			if (hand_numbers.at(i) == hand_numbers.at(j)) {
@@ -85,7 +93,7 @@ vector<int> CDealer::isPair(vector<int> hand_numbers) {
 		}
 	}
 
-	//分岐して処理
+	//役によって分岐してハイカード処理
 	vector<int> power_pair;
 	if (count == 1) {
 		power_pair.push_back(OnePair);
