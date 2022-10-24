@@ -88,14 +88,15 @@ vector<int> CDealer::isFlush(vector<Card>& hand, vector<int> hand_numbers) {
 //ストレートチェック
 // FALSE:-1を返す
 vector<int> CDealer::isStraight(vector<int> hand_numbers) {
-	bool result = true;
-	for (int i = 0; i < 4; i++) {
-		// 数字が連続でない場合ストレートではない
-		if (hand_numbers.at(i) - 1 != hand_numbers.at(i + 1)) {
-			result = false;
+	int max = hand_numbers.front();
+	int min = 0;
+	for (auto itr = hand_numbers.end() - 1; itr != hand_numbers.begin(); itr--) {
+		if (*itr != 0) {
+			min = *itr;
+			break;
 		}
 	}
-	if (result) {
+	if (max - min <= 4) { //ストレート確定
 		return { Straight, hand_numbers.front() };
 	}
 	else {
