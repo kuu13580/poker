@@ -3,6 +3,7 @@
 
 class CCards {
 private:
+	// ƒJ[ƒh‚Ì‘”
 	int m_numCards;
 	vector<Card> m_cards;
 public:
