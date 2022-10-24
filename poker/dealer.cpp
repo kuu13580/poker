@@ -118,7 +118,7 @@ vector<int> CDealer::isPair(vector<int> hand_numbers) {
 		power_pair.insert(power_pair.end(), key_numbers.begin(), key_numbers.end());
 	}
 	else if (count == 3) {
-		power_pair.push_back(ThreeCard);
+		power_pair.push_back(ThreeOfKind);
 		power_pair.push_back(hand_numbers.at(2));
 		if (hand_numbers.at(2) == hand_numbers.at(3)) {
 			power_pair.push_back(hand_numbers.at(0));
@@ -144,7 +144,7 @@ vector<int> CDealer::isPair(vector<int> hand_numbers) {
 		}
 	}
 	else if (count == 6) { // フォーカード
-		power_pair.push_back(FourCard);
+		power_pair.push_back(FourOfKind);
 		power_pair.push_back(hand_numbers.at(2));
 		if (hand_numbers.at(2) == hand_numbers.front()) {
 			power_pair.push_back(hand_numbers.back());

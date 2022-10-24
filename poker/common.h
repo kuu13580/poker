@@ -38,11 +38,11 @@ typedef enum Hand {
 	NoPair,
 	OnePair,
 	TwoPair,
-	ThreeCard,
+	ThreeOfKind,
 	Straight,
 	Flush,
 	FullHouse,
-	FourCard,
+	FourOfKind,
 	StraightFlush,
 	RoyalFlush,
 }Hand;
