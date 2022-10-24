@@ -96,8 +96,13 @@ vector<int> CDealer::isStraight(vector<int> hand_numbers) {
 			break;
 		}
 	}
-	if (max - min <= 4) { //ストレート確定
-		return { Straight, hand_numbers.front() };
+	int difference = max - min;
+	if (difference <= 4) { //ストレート確定
+		int hicard = hand_numbers.front() + (4 - difference);
+		if (hicard > 14) {
+			hicard = 14;
+		}
+		return { Straight, hicard };
 	}
 	else {
 		vector<int> weak_straight = { 14,5,4,3,2 };
