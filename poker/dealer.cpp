@@ -1,6 +1,11 @@
 #include "common.h"
 #include "dealer.h"
 
+//コンストラクタ
+CDealer::CDealer() : num_joker(0) {
+
+}
+
 //役チェック
 vector<int> CDealer::checkHand(vector<Card> hand) {
 	// 数字のみの配列を作成
@@ -9,14 +14,24 @@ vector<int> CDealer::checkHand(vector<Card> hand) {
 		hand_numbers.push_back(hand.at(i).number);
 	}
 	sort(hand_numbers.begin(), hand_numbers.end(), greater<int>());
+	//JOKERの数
+	num_joker = 0;
+	for (int i = 0; i < hand_numbers.size(); i++) {
+		if (hand_numbers.at(i) == 0) {
+			num_joker++;
+		}
+	}
 	//ペアチェック
+	int buffer_num_joker = num_joker;
 	vector<int> power_pair;
 	power_pair = isPair(hand_numbers);
 	//フラッシュ・ストレートチェック
 	if (power_pair.at(0) == NoPair) {
 		vector<int> power_flush;
 		vector<int> power_straight;
+		num_joker = buffer_num_joker;
 		power_flush = isFlush(hand, hand_numbers);
+		num_joker = buffer_num_joker;
 		power_straight = isStraight(hand_numbers);
 
 		if (power_flush.at(0) > 0 && power_straight.at(0) > 0) {
@@ -41,16 +56,27 @@ vector<int> CDealer::isFlush(vector<Card>& hand, vector<int> hand_numbers) {
 	bool result = true;
 	for (int i = 0; i < hand.size() - 1; i++) {
 		// 隣り合うスートが異なる場合フラッシュでない
-		if (hand.at(i).suit != hand.at(i + 1).suit) {
+		if (hand.at(i).suit != hand.at(i + 1).suit && hand.at(i).suit != Joker && hand.at(i + 1).suit != Joker) {
 			result = false;
 		}
 	}
 	if (result) {
 		vector<int> v;
 		v.push_back(Flush);
-		// 数字が大きい順にキーカード
-		for (int i = 0; i < 5; i++) {
-			v.push_back(hand_numbers.at(i));
+		// 数字が大きい順にキッカー
+		auto itr = hand_numbers.begin();
+		for (int i = 14; i > 0; i--) {
+			if (itr == hand_numbers.end()) {
+				break;
+			}
+			if (i != *itr && num_joker > 0) {
+				v.push_back(i);
+				num_joker--;
+			}
+			else if (i == *itr) {
+				v.push_back(i);
+				itr++;
+			}
 		}
 		return v;
 	}
@@ -83,41 +109,66 @@ vector<int> CDealer::isStraight(vector<int> hand_numbers) {
 
 //ペアチェック
 vector<int> CDealer::isPair(vector<int> hand_numbers) {
+	//↓要改善な気がする
+	sort(hand_numbers.begin(), hand_numbers.end(), greater<int>());
 	// 比較成功回数を調べる
 	int count = 0;
 	for (int i = 0; i < 5; i++) {
 		for (int j = 0; j < i; j++) {
-			if (hand_numbers.at(i) == hand_numbers.at(j)) {
+			if (hand_numbers.at(i) == hand_numbers.at(j) && hand_numbers.at(i) != 0) {
 				count++;
 			}
 		}
 	}
 
 	//役によって分岐してハイカード処理
-	vector<int> power_pair;
-	if (count == 1) {
+	vector<int> power_pair; //返す配列
+	if (count == 1) { // ワンペア
 		power_pair.push_back(OnePair);
-		vector<int> key_numbers;
-		copy(hand_numbers.begin(), hand_numbers.end(), back_inserter(key_numbers));
-		for (int i = 0; i < key_numbers.size() - 1; i++) {
-			if (key_numbers.at(i) == key_numbers.at(i + 1)) {
-				key_numbers.erase(key_numbers.begin() + i);
+		for (auto itr = hand_numbers.begin(); itr < hand_numbers.end() - 1; itr++) {
+			if (*(itr) == *(itr + 1) && *(itr) != 0) {
+				power_pair.insert(power_pair.begin() + 1, *itr);
+				itr++;
+			}
+			else {
+				power_pair.push_back(*itr);
 			}
 		}
-		power_pair.insert(power_pair.end(), key_numbers.begin(), key_numbers.end());
+		if (*(hand_numbers.end() - 1) != *(hand_numbers.end() - 2)) {
+			power_pair.push_back(hand_numbers.back());
+		}
+		//JOKERが存在する場合
+		if (num_joker > 0) {
+			cout << num_joker;
+			num_joker--;
+			hand_numbers.back() = power_pair.at(1);
+			return isPair(hand_numbers);
+		}
 	}
-	else if (count == 2) {
+	else if (count == 2) { // ツーペア
 		power_pair.push_back(TwoPair);
-		vector<int> key_numbers;
-		copy(hand_numbers.begin(), hand_numbers.end(), back_inserter(key_numbers));
-		for (int i = 0; i < key_numbers.size() - 1; i++) {
-			if (key_numbers.at(i) == key_numbers.at(i + 1)) {
-				key_numbers.erase(key_numbers.begin() + i);
+		int count = 0;
+		for (auto itr = hand_numbers.begin(); itr < hand_numbers.end() - 1; itr++) {
+			if (*(itr) == *(itr + 1) && *(itr) != 0) {
+				count++;
+				power_pair.insert(power_pair.begin() + count, *itr);
+				itr++;
+			}
+			else {
+				power_pair.push_back(*itr);
 			}
 		}
-		power_pair.insert(power_pair.end(), key_numbers.begin(), key_numbers.end());
+		if (*(hand_numbers.end() - 1) != *(hand_numbers.end() - 2)) {
+			power_pair.push_back(hand_numbers.back());
+		}
+		//JOKERが存在する場合
+		if (num_joker > 0) {
+			num_joker--;
+			hand_numbers.back() = power_pair.at(1);
+			return isPair(hand_numbers);
+		}
 	}
-	else if (count == 3) {
+	else if (count == 3) { // スリーカード
 		power_pair.push_back(ThreeOfKind);
 		power_pair.push_back(hand_numbers.at(2));
 		if (hand_numbers.at(2) == hand_numbers.at(3)) {
@@ -132,8 +183,13 @@ vector<int> CDealer::isPair(vector<int> hand_numbers) {
 		else {
 			power_pair.push_back(hand_numbers.at(1));
 		}
+		if (num_joker > 0) {
+			num_joker--;
+			hand_numbers.back() = power_pair.at(1);
+			return isPair(hand_numbers);
+		}
 	}
-	else if (count == 4) {
+	else if (count == 4) { // フルハウス
 		power_pair.push_back(FullHouse);
 		power_pair.push_back(hand_numbers.at(2));
 		if (hand_numbers.at(2) == hand_numbers.front()) {
@@ -142,10 +198,21 @@ vector<int> CDealer::isPair(vector<int> hand_numbers) {
 		else {
 			power_pair.push_back(hand_numbers.front());
 		}
+		//フルハウスにJokerは存在し得ない
 	}
 	else if (count == 6) { // フォーカード
 		power_pair.push_back(FourOfKind);
 		power_pair.push_back(hand_numbers.at(2));
+		if (num_joker > 0) {
+			num_joker--;
+			if (hand_numbers.at(2) == 14) {
+				hand_numbers.back() = 13;
+			}
+			else {
+				hand_numbers.back() = 14;
+			}
+			return isPair(hand_numbers);
+		}
 		if (hand_numbers.at(2) == hand_numbers.front()) {
 			power_pair.push_back(hand_numbers.back());
 		}
