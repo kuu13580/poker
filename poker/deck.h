@@ -6,12 +6,15 @@ private:
 	vector<Card> deck_;
 	// 捨てられたカード
 	vector<Card> burncards_;
-	// カードの総数
+	// JOKERの総数
+	int num_jokers_;
+	// カードの現在の残数
 	int num_deck_cards_;
 public:
 	int num_deck_cards() { return num_deck_cards_; };
 	// コンストラクタ
-	CDeck(int num_jokers_);
+	CDeck() : CDeck(0) {};
+	CDeck(int num_jokers);
 	// 表示
 	void show();
 	// シャッフル
@@ -22,6 +25,8 @@ public:
 	Card exchange(Card discard);
 	// 捨て札を戻す
 	void returnBurncards();
+	// カードの初期化
+	void initialize();
 };
 
 #endif // _H_DECK_
