@@ -1,6 +1,5 @@
 #ifndef _H_PLAYER_
 #define _H_PLAYER_
-
 class CDeck;
 
 class CPlayer {
@@ -9,11 +8,14 @@ private:
 	string name_;
 	// 手札
 	vector<Card> hand_;
+	// 持ち金
+	int bankroll_;
 public:
 	vector<Card> hand() { return hand_; };
+	int bankroll() { return bankroll_; };
 	// コンストラクタ
-	CPlayer() : CPlayer("プレイヤー" + to_string(num_players_ + 1)) {};
-	CPlayer(string name);
+	CPlayer(int bankroll) : CPlayer("プレイヤー" + to_string(num_players_ + 1), bankroll) {};
+	CPlayer(string name, int bankroll);
 	// 手札表示
 	void show();
 	// ドロー
@@ -21,9 +23,11 @@ public:
 	// n回ドロー
 	void draw(CDeck& cards, int n);
 	// 手札ソート
-	void sortHand();
+	void sortHand() { sort(hand_.begin(), hand_.end()); };
 	// 手札交換
 	void exchangeHand(int n, vector<int> selected, CDeck& cards);
+	// 手札削除
+	void clearHand() { hand_.clear(); };
 };
 
 

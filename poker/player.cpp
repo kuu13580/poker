@@ -5,10 +5,11 @@
 int CPlayer::num_players_ = 0;
 
 // コンストラクタ
-CPlayer::CPlayer(string name) {
+CPlayer::CPlayer(string name, int bankroll) {
 	// プレイヤーの数増加
 	num_players_++;
 	name_ = name;
+	bankroll_ = bankroll;
 	//vectorの領域確保
 	hand_.reserve(NUM_HANDCARDS);
 }
@@ -36,10 +37,6 @@ void CPlayer::draw(CDeck& cards, int n) {
 	}
 }
 
-//手札ソート
-void CPlayer::sortHand() {
-	sort(hand_.begin(), hand_.end());
-}
 
 // 手札交換
 void CPlayer::exchangeHand(int n, vector<int> selected, CDeck& cards) {

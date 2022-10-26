@@ -2,26 +2,16 @@
 #include "deck.h"
 
 // コンストラクタ
-CDeck::CDeck(int num_jokers_) : num_deck_cards_(0) {
-	num_deck_cards_ = NUM_CARDS + num_jokers_;
+CDeck::CDeck(int num_jokers) : num_deck_cards_(0) {
+	num_jokers_ = num_jokers;
+	num_deck_cards_ = NUM_STD_CARDS + num_jokers;
 	// vectorの領域確保
 	deck_.reserve(num_deck_cards_);
 	int buffer = num_deck_cards_ - NUM_HANDCARDS * NUM_PLAYER;
 	burncards_.reserve(buffer);
-	burncards_.reserve(num_deck_cards_ - NUM_HANDCARDS * NUM_PLAYER);
+
 	// カードの初期化
-	Card n_card;
-	for (int i = 0; i < 4; i++) {
-		for (int j = 2; j <= 14; j++) {
-			n_card = { Suit(i) ,j };
-			deck_.emplace_back(n_card);
-		}
-	}
-	n_card = { Joker ,0 };
-	for (int i = 1; i <= num_jokers_; i++) {
-		deck_.emplace_back(n_card);
-	}
-	shuffle();
+	initialize();
 }
 
 // 内容表示
@@ -73,5 +63,25 @@ void CDeck::returnBurncards() {
 	num_deck_cards_ += (int)burncards_.size();
 	copy(burncards_.begin(), burncards_.end(), back_inserter(deck_));
 	burncards_.clear();
+	shuffle();
+}
+
+// カードの初期化
+void CDeck::initialize() {
+	deck_.clear();
+	burncards_.clear();
+	num_deck_cards_ = NUM_STD_CARDS + num_jokers_;
+	// カードを追加
+	Card n_card;
+	for (int i = 0; i < 4; i++) {
+		for (int j = 2; j <= 14; j++) {
+			n_card = { Suit(i) ,j };
+			deck_.emplace_back(n_card);
+		}
+	}
+	n_card = { Joker ,0 };
+	for (int i = 1; i <= num_jokers_; i++) {
+		deck_.emplace_back(n_card);
+	}
 	shuffle();
 }
