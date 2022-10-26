@@ -5,16 +5,12 @@
 int CPlayer::num_players_ = 0;
 
 // コンストラクタ
-CPlayer::CPlayer() {
-	// プレイヤーの数増加
-	num_players_++;
-	name_ = "プレイヤー" + to_string(num_players_);
-
-}
 CPlayer::CPlayer(string name) {
 	// プレイヤーの数増加
 	num_players_++;
 	name_ = name;
+	//vectorの領域確保
+	hand_.reserve(NUM_HANDCARDS);
 }
 
 // 手札表示

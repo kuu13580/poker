@@ -10,6 +10,7 @@ CDealer::CDealer() : num_jokers_(0) {
 vector<int> CDealer::checkHand(vector<Card> hand) {
 	// 数字のみの配列を作成
 	vector<int> hand_numbers;
+	hand_numbers.reserve(NUM_HANDCARDS);
 	for (int i = 0; i < NUM_HANDCARDS; i++) {
 		hand_numbers.emplace_back(hand.at(i).number);
 	}
@@ -24,16 +25,21 @@ vector<int> CDealer::checkHand(vector<Card> hand) {
 	//ペアチェック
 	int buffer_num_joker = num_jokers_;
 	vector<int> power_pair;
+	power_pair.reserve(NUM_HANDCARDS + 1);
 	power_pair = isPair(hand_numbers);
 	//フラッシュ・ストレートチェック
 	if (power_pair.at(0) == NoPair) {
+		//出力用のvector準備
 		vector<int> power_flush;
 		vector<int> power_straight;
+		power_flush.reserve(NUM_HANDCARDS + 1);
+		power_straight.reserve(NUM_HANDCARDS + 1);
+		//役を確認
 		num_jokers_ = buffer_num_joker;
 		power_flush = isFlush(hand, hand_numbers);
 		num_jokers_ = buffer_num_joker;
 		power_straight = isStraight(hand_numbers);
-
+		// 出力に応じて分岐
 		if (power_flush.at(0) > 0 && power_straight.at(0) > 0) { //フラッシュかつストレート
 			if (power_straight.at(1) == 14) {
 				return { RoyalFlush };
@@ -62,6 +68,7 @@ vector<int> CDealer::isFlush(vector<Card>& hand, vector<int> hand_numbers) {
 	}
 	if (result) {
 		vector<int> v;
+		v.reserve(NUM_HANDCARDS + 1);
 		v.emplace_back(Flush);
 		// 数字が大きい順にキッカー
 		auto itr = hand_numbers.begin();
@@ -129,6 +136,7 @@ vector<int> CDealer::isPair(vector<int> hand_numbers) {
 
 	//役によって分岐してハイカード処理
 	vector<int> power_pair; //返す配列
+	power_pair.reserve(NUM_HANDCARDS + 1);
 	if (count == 1) { // ワンペア
 		power_pair.emplace_back(OnePair);
 		for (auto itr = hand_numbers.begin(); itr < hand_numbers.end() - 1; itr++) {
@@ -236,6 +244,7 @@ vector<int> CDealer::isPair(vector<int> hand_numbers) {
 // 役の表示(デバッグ用)
 void CDealer::viewHand(vector<Card> hand) {
 	vector<int> result = checkHand(hand);
+	result.reserve(NUM_HANDCARDS + 1);
 	cout << "役 : " << hands[result.at(0)] << endl;
 	// 配列の表示
 	/*cout << "配列 : [";
