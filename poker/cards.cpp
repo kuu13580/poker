@@ -6,13 +6,16 @@ CCards::CCards(int numJoker) : m_numCards(0) {
 	m_numCards = NUM_CARDS + numJoker;
 
 	// カードの初期化
+	Card n_card;
 	for (int i = 0; i < 4; i++) {
 		for (int j = 2; j <= 14; j++) {
-			m_cards.push_back({ Suit(i) ,j });
+			n_card = { Suit(i) ,j };
+			m_cards.emplace_back(n_card);
 		}
 	}
+	n_card = { Joker ,0 };
 	for (int i = 1; i <= numJoker; i++) {
-		m_cards.push_back({ Joker ,0 });
+		m_cards.emplace_back(n_card);
 	}
 	shuffle();
 }
@@ -57,7 +60,7 @@ Card CCards::exchange(Card discard) {
 		cout << "ERROR : カード交換できませんでした" << endl;
 		exit(0);
 	}
-	m_burncard.push_back(discard);
+	m_burncard.emplace_back(discard);
 	return draw();
 }
 

@@ -27,7 +27,7 @@ void CPlayer::show() {
 
 // Å‰‚Ìƒhƒ[
 void CPlayer::draw(CCards& cards) {
-	m_hand.push_back(cards.draw());
+	m_hand.emplace_back(cards.draw());
 }
 void CPlayer::draw(CCards& cards, int n) {
 	if (n < 1) {
@@ -35,7 +35,7 @@ void CPlayer::draw(CCards& cards, int n) {
 		exit(0);
 	}
 	for (int i = 0; i < n; i++) {
-		m_hand.push_back(cards.draw());
+		m_hand.emplace_back(cards.draw());
 	}
 }
 

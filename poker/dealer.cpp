@@ -11,7 +11,7 @@ vector<int> CDealer::checkHand(vector<Card> hand) {
 	// 数字のみの配列を作成
 	vector<int> hand_numbers;
 	for (int i = 0; i < hand.size(); i++) {
-		hand_numbers.push_back(hand.at(i).number);
+		hand_numbers.emplace_back(hand.at(i).number);
 	}
 	sort(hand_numbers.begin(), hand_numbers.end(), greater<int>());
 	//JOKERの数
@@ -62,7 +62,7 @@ vector<int> CDealer::isFlush(vector<Card>& hand, vector<int> hand_numbers) {
 	}
 	if (result) {
 		vector<int> v;
-		v.push_back(Flush);
+		v.emplace_back(Flush);
 		// 数字が大きい順にキッカー
 		auto itr = hand_numbers.begin();
 		for (int i = 14; i > 0; i--) {
@@ -70,11 +70,11 @@ vector<int> CDealer::isFlush(vector<Card>& hand, vector<int> hand_numbers) {
 				break;
 			}
 			if (i != *itr && num_joker > 0) {
-				v.push_back(i);
+				v.emplace_back(i);
 				num_joker--;
 			}
 			else if (i == *itr) {
-				v.push_back(i);
+				v.emplace_back(i);
 				itr++;
 			}
 		}
@@ -130,18 +130,18 @@ vector<int> CDealer::isPair(vector<int> hand_numbers) {
 	//役によって分岐してハイカード処理
 	vector<int> power_pair; //返す配列
 	if (count == 1) { // ワンペア
-		power_pair.push_back(OnePair);
+		power_pair.emplace_back(OnePair);
 		for (auto itr = hand_numbers.begin(); itr < hand_numbers.end() - 1; itr++) {
 			if (*(itr) == *(itr + 1) && *(itr) != 0) {
 				power_pair.insert(power_pair.begin() + 1, *itr);
 				itr++;
 			}
 			else {
-				power_pair.push_back(*itr);
+				power_pair.emplace_back(*itr);
 			}
 		}
 		if (*(hand_numbers.end() - 1) != *(hand_numbers.end() - 2)) {
-			power_pair.push_back(hand_numbers.back());
+			power_pair.emplace_back(hand_numbers.back());
 		}
 		//JOKERが存在する場合
 		if (num_joker > 0) {
@@ -152,7 +152,7 @@ vector<int> CDealer::isPair(vector<int> hand_numbers) {
 		}
 	}
 	else if (count == 2) { // ツーペア
-		power_pair.push_back(TwoPair);
+		power_pair.emplace_back(TwoPair);
 		int count = 0;
 		for (auto itr = hand_numbers.begin(); itr < hand_numbers.end() - 1; itr++) {
 			if (*(itr) == *(itr + 1) && *(itr) != 0) {
@@ -161,11 +161,11 @@ vector<int> CDealer::isPair(vector<int> hand_numbers) {
 				itr++;
 			}
 			else {
-				power_pair.push_back(*itr);
+				power_pair.emplace_back(*itr);
 			}
 		}
 		if (*(hand_numbers.end() - 1) != *(hand_numbers.end() - 2)) {
-			power_pair.push_back(hand_numbers.back());
+			power_pair.emplace_back(hand_numbers.back());
 		}
 		//JOKERが存在する場合
 		if (num_joker > 0) {
@@ -175,19 +175,19 @@ vector<int> CDealer::isPair(vector<int> hand_numbers) {
 		}
 	}
 	else if (count == 3) { // スリーカード
-		power_pair.push_back(ThreeOfKind);
-		power_pair.push_back(hand_numbers.at(2));
+		power_pair.emplace_back(ThreeOfKind);
+		power_pair.emplace_back(hand_numbers.at(2));
 		if (hand_numbers.at(2) == hand_numbers.at(3)) {
-			power_pair.push_back(hand_numbers.at(0));
+			power_pair.emplace_back(hand_numbers.at(0));
 		}
 		else {
-			power_pair.push_back(hand_numbers.at(3));
+			power_pair.emplace_back(hand_numbers.at(3));
 		}
 		if (hand_numbers.at(1) == hand_numbers.at(2)) {
-			power_pair.push_back(hand_numbers.at(4));
+			power_pair.emplace_back(hand_numbers.at(4));
 		}
 		else {
-			power_pair.push_back(hand_numbers.at(1));
+			power_pair.emplace_back(hand_numbers.at(1));
 		}
 		if (num_joker > 0) {
 			num_joker--;
@@ -196,19 +196,19 @@ vector<int> CDealer::isPair(vector<int> hand_numbers) {
 		}
 	}
 	else if (count == 4) { // フルハウス
-		power_pair.push_back(FullHouse);
-		power_pair.push_back(hand_numbers.at(2));
+		power_pair.emplace_back(FullHouse);
+		power_pair.emplace_back(hand_numbers.at(2));
 		if (hand_numbers.at(2) == hand_numbers.front()) {
-			power_pair.push_back(hand_numbers.back());
+			power_pair.emplace_back(hand_numbers.back());
 		}
 		else {
-			power_pair.push_back(hand_numbers.front());
+			power_pair.emplace_back(hand_numbers.front());
 		}
 		//フルハウスにJokerは存在し得ない
 	}
 	else if (count == 6) { // フォーカード
-		power_pair.push_back(FourOfKind);
-		power_pair.push_back(hand_numbers.at(2));
+		power_pair.emplace_back(FourOfKind);
+		power_pair.emplace_back(hand_numbers.at(2));
 		if (num_joker > 0) {
 			num_joker--;
 			if (hand_numbers.at(2) == 14) {
@@ -220,14 +220,14 @@ vector<int> CDealer::isPair(vector<int> hand_numbers) {
 			return isPair(hand_numbers);
 		}
 		if (hand_numbers.at(2) == hand_numbers.front()) {
-			power_pair.push_back(hand_numbers.back());
+			power_pair.emplace_back(hand_numbers.back());
 		}
 		else {
-			power_pair.push_back(hand_numbers.front());
+			power_pair.emplace_back(hand_numbers.front());
 		}
 	}
 	else { // ノーペア
-		power_pair.push_back(NoPair);
+		power_pair.emplace_back(NoPair);
 		power_pair.insert(power_pair.end(), hand_numbers.begin(), hand_numbers.end());
 	}
 	return power_pair;
