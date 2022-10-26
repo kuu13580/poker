@@ -35,7 +35,7 @@ int main() {
 
 	while (1) {
 		player[0].show();
-		dealer.viewHand(player[0].m_hand);
+		dealer.viewHand(player[0].hand_);
 		cout << "交換する手札の数 : ";
 		cin >> n;
 		if (n == 0) {
