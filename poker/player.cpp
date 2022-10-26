@@ -25,7 +25,7 @@ void CPlayer::show() {
 	cout << endl;
 }
 
-// ドロー
+// 最初のドロー
 void CPlayer::draw(CCards& cards) {
 	m_hand.push_back(cards.draw());
 }
@@ -45,10 +45,15 @@ void CPlayer::sortHand() {
 }
 
 // 手札交換
-void CPlayer::exchangeHand(int n, int* selected, CCards& cards) {
+void CPlayer::exchangeHand(int n, vector<int> selected, CCards& cards) {
+	if (cards.m_numCards < n) {
+		cards.returnCards();
+	}
+	Card new_card;
 	for (int i = 0; i < n; i++) {
+		new_card = cards.exchange(m_hand.at(selected[i]));
 		m_hand.erase(m_hand.begin() + selected[i]);
-		m_hand.insert(m_hand.begin() + selected[i], cards.draw());
+		m_hand.insert(m_hand.begin() + selected[i], new_card);
 	}
 	sortHand();
 }

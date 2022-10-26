@@ -17,7 +17,7 @@ string hands[] = {
 	"StraightFlush",
 	"RoyalFlush",
 };
-const int NUM_PLAYER = 4;
+const int NUM_PLAYER = 1;
 const int NUM_CARDS = 52;
 
 int main() {
@@ -30,7 +30,23 @@ int main() {
 	}
 
 	CDealer dealer;
-	vector<Card> test = { {Spades, 3},{Spades, 4},{Spades, 5},{Spades, 6},{Hearts, 7} };
-	dealer.viewHand(test);
+	int n;
 
-}
+	while (1) {
+		player[0].show();
+		dealer.viewHand(player[0].m_hand);
+		cout << "交換する手札の数 : ";
+		cin >> n;
+		if (n == 0) {
+			break;
+		}
+		vector<int> test(n);
+		cout << "交換する手札 : ";
+		for (int i = 0; i < n; i++) {
+			cin >> test.at(i);
+		}
+		player[0].exchangeHand(n, test, cards);
+		cout << endl;
+	}
+	cout << "プログラム終了" << endl;
+}	

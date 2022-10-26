@@ -7,8 +7,9 @@ class CPlayer {
 private:
 	static int m_numPlayer;
 	string m_name;
-	vector<Card> m_hand;
 public:
+	// 手札
+	vector<Card> m_hand;
 	// コンストラクタ
 	CPlayer();
 	CPlayer(string name);
@@ -21,7 +22,7 @@ public:
 	// 手札ソート
 	void sortHand();
 	// 手札交換
-	void exchangeHand(int n, int* selected, CCards& cards);
+	void exchangeHand(int n, vector<int> selected, CCards& cards);
 };
 
 

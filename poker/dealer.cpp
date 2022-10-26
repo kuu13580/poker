@@ -233,11 +233,14 @@ vector<int> CDealer::isPair(vector<int> hand_numbers) {
 	return power_pair;
 }
 
+// 役の表示(デバッグ用)
 void CDealer::viewHand(vector<Card> hand) {
 	vector<int> result = checkHand(hand);
-	cout << "役 : " << hands[result.at(0)] << endl << "配列 : [";
+	cout << "役 : " << hands[result.at(0)] << endl;
+	// 配列の表示
+	/*cout << "配列 : [";
 	for (int i = 0; i < result.size(); i++) {
 		cout << " " << result.at(i) << ",";
 	}
-	cout << "]" << endl;
+	cout << "]" << endl;*/
 }
