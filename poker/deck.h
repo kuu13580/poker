@@ -1,17 +1,17 @@
-#ifndef _H_CARDS_
-#define _H_CARDS_
+#ifndef _H_DECK_
+#define _H_DECK_
 
-class CCards {
+class CDeck {
 private:
-	vector<Card> cards_;
+	vector<Card> deck_;
 	// 捨てられたカード
 	vector<Card> burncards_;
 	// カードの総数
-	int num_cards_;
+	int num_deck_cards_;
 public:
-	int num_cards() { return num_cards_; };
+	int num_deck_cards() { return num_deck_cards_; };
 	// コンストラクタ
-	CCards(int num_jokers_);
+	CDeck(int num_jokers_);
 	// 表示
 	void show();
 	// シャッフル
@@ -21,7 +21,7 @@ public:
 	// カード交換
 	Card exchange(Card discard);
 	// 捨て札を戻す
-	void returnCards();
+	void returnBurncards();
 };
 
-#endif // _H_CARDS_
+#endif // _H_DECK_

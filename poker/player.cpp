@@ -1,6 +1,6 @@
 #include "common.h"
 #include "player.h"
-#include "cards.h"
+#include "deck.h"
 
 int CPlayer::num_players_ = 0;
 
@@ -27,10 +27,10 @@ void CPlayer::show() {
 }
 
 // 最初のドロー
-void CPlayer::draw(CCards& cards) {
+void CPlayer::draw(CDeck& cards) {
 	hand_.emplace_back(cards.draw());
 }
-void CPlayer::draw(CCards& cards, int n) {
+void CPlayer::draw(CDeck& cards, int n) {
 	if (n < 1) {
 		cout << "ドロー回数エラー" << endl;
 		exit(0);
@@ -46,9 +46,9 @@ void CPlayer::sortHand() {
 }
 
 // 手札交換
-void CPlayer::exchangeHand(int n, vector<int> selected, CCards& cards) {
-	if (cards.num_cards() < n) {
-		cards.returnCards();
+void CPlayer::exchangeHand(int n, vector<int> selected, CDeck& cards) {
+	if (cards.num_deck_cards() < n) {
+		cards.returnBurncards();
 	}
 	Card new_card;
 	for (int i = 0; i < n; i++) {

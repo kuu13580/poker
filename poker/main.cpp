@@ -1,5 +1,5 @@
 ﻿#include "common.h"
-#include "cards.h"
+#include "deck.h"
 #include "player.h"
 #include "dealer.h"
 
@@ -23,10 +23,10 @@ const int NUM_HANDCARDS = 5;
 
 int main() {
 	// 初期作業
-	CCards cards(0);
+	CDeck deck(0);
 	CPlayer player[NUM_PLAYER];
 	for (int i = 0; i < NUM_PLAYER; i++) {
-		player[i].draw(cards, NUM_HANDCARDS);
+		player[i].draw(deck, NUM_HANDCARDS);
 		player[i].sortHand();
 	}
 
@@ -35,7 +35,7 @@ int main() {
 
 	while (1) {
 		player[0].show();
-		dealer.viewHand(player[0].hand_);
+		dealer.viewHand(player[0].hand());
 		cout << "交換する手札の数 : ";
 		cin >> n;
 		if (n == 0) {
@@ -46,7 +46,7 @@ int main() {
 		for (int i = 0; i < n; i++) {
 			cin >> test.at(i);
 		}
-		player[0].exchangeHand(n, test, cards);
+		player[0].exchangeHand(n, test, deck);
 		cout << endl;
 	}
 	cout << "プログラム終了" << endl;
