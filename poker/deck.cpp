@@ -8,6 +8,7 @@ CDeck::CDeck(int num_jokers_) : num_deck_cards_(0) {
 	deck_.reserve(num_deck_cards_);
 	int buffer = num_deck_cards_ - NUM_HANDCARDS * NUM_PLAYER;
 	burncards_.reserve(buffer);
+	burncards_.reserve(num_deck_cards_ - NUM_HANDCARDS * NUM_PLAYER);
 	// カードの初期化
 	Card n_card;
 	for (int i = 0; i < 4; i++) {
@@ -59,7 +60,7 @@ Card CDeck::draw() {
 
 // カード交換
 Card CDeck::exchange(Card discard) {
-	if (num_deck_cards_ < 0) {
+	if (num_deck_cards_ <= 0) {
 		cout << "ERROR : カード交換できませんでした" << endl;
 		exit(0);
 	}
@@ -69,10 +70,7 @@ Card CDeck::exchange(Card discard) {
 
 // 捨て札を戻す
 void CDeck::returnBurncards() {
-	if (!deck_.empty()) {
-		cout << "ERROR : 捨て札を戻せませんでした" << endl;
-		exit(0);
-	}
+	num_deck_cards_ += burncards_.size();
 	copy(burncards_.begin(), burncards_.end(), back_inserter(deck_));
 	burncards_.clear();
 	shuffle();

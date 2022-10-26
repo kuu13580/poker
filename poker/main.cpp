@@ -34,6 +34,7 @@ int main() {
 	int n;
 
 	while (1) {
+		deck.show();
 		player[0].show();
 		dealer.viewHand(player[0].hand());
 		cout << "交換する手札の数 : ";
