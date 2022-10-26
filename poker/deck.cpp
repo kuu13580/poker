@@ -4,6 +4,9 @@
 // コンストラクタ
 CDeck::CDeck(int num_jokers_) : num_deck_cards_(0) {
 	num_deck_cards_ = NUM_CARDS + num_jokers_;
+	// vectorの領域確保
+	deck_.reserve(num_deck_cards_);
+	burncards_.reserve(num_deck_cards_ - NUM_HANDCARDS * NUM_PLAYER);
 	// カードの初期化
 	Card n_card;
 	for (int i = 0; i < 4; i++) {

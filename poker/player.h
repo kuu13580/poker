@@ -12,7 +12,7 @@ private:
 public:
 	vector<Card> hand() { return hand_; };
 	// コンストラクタ
-	CPlayer();
+	CPlayer() : CPlayer("プレイヤー" + to_string(num_players_ + 1)) {};
 	CPlayer(string name);
 	// 手札表示
 	void show();
