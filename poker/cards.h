@@ -3,14 +3,15 @@
 
 class CCards {
 private:
-	vector<Card> m_cards;
+	vector<Card> cards_;
 	// 捨てられたカード
-	vector<Card> m_burncard;
-public:
+	vector<Card> burncards_;
 	// カードの総数
-	int m_numCards;
+	int num_cards_;
+public:
+	int num_cards() { return num_cards_; };
 	// コンストラクタ
-	CCards(int numJoker);
+	CCards(int num_jokers_);
 	// 表示
 	void show();
 	// シャッフル

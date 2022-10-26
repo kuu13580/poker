@@ -3,8 +3,7 @@
 
 class CDealer {
 private:
-	//グローバル変数
-	int num_joker;
+	int num_jokers_;
 	// 以下のチェックでは約無しで-1を返す
 	// チェック時は数字は降順ソート必須
 	vector<int> isFlush(vector<Card>& hand, vector<int> hand_numbers);

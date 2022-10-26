@@ -1,0 +1,18 @@
+ヘッダーマクロ
+	_H_NAME_
+
+関数
+ローワーキャメルケース
+	void showExampleFunction()
+
+変数
+スネークケース、複数のときは複数形(vectorなど)
+	int num_examples
+
+クラス
+C をつけてアッパーキャメルケース
+	class CExample
+
+クラスメンバ変数
+上記変数の規則に加えて末尾にアンダースコア
+	int example_

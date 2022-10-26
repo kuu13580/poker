@@ -2,7 +2,7 @@
 #include "dealer.h"
 
 //コンストラクタ
-CDealer::CDealer() : num_joker(0) {
+CDealer::CDealer() : num_jokers_(0) {
 
 }
 
@@ -15,23 +15,23 @@ vector<int> CDealer::checkHand(vector<Card> hand) {
 	}
 	sort(hand_numbers.begin(), hand_numbers.end(), greater<int>());
 	//JOKERの数
-	num_joker = 0;
+	num_jokers_ = 0;
 	for (int i = 0; i < NUM_HANDCARDS; i++) {
 		if (hand_numbers.at(i) == 0) {
-			num_joker++;
+			num_jokers_++;
 		}
 	}
 	//ペアチェック
-	int buffer_num_joker = num_joker;
+	int buffer_num_joker = num_jokers_;
 	vector<int> power_pair;
 	power_pair = isPair(hand_numbers);
 	//フラッシュ・ストレートチェック
 	if (power_pair.at(0) == NoPair) {
 		vector<int> power_flush;
 		vector<int> power_straight;
-		num_joker = buffer_num_joker;
+		num_jokers_ = buffer_num_joker;
 		power_flush = isFlush(hand, hand_numbers);
-		num_joker = buffer_num_joker;
+		num_jokers_ = buffer_num_joker;
 		power_straight = isStraight(hand_numbers);
 
 		if (power_flush.at(0) > 0 && power_straight.at(0) > 0) { //フラッシュかつストレート
@@ -69,9 +69,9 @@ vector<int> CDealer::isFlush(vector<Card>& hand, vector<int> hand_numbers) {
 			if (itr == hand_numbers.end()) {
 				break;
 			}
-			if (i != *itr && num_joker > 0) {
+			if (i != *itr && num_jokers_ > 0) {
 				v.emplace_back(i);
-				num_joker--;
+				num_jokers_--;
 			}
 			else if (i == *itr) {
 				v.emplace_back(i);
@@ -144,9 +144,9 @@ vector<int> CDealer::isPair(vector<int> hand_numbers) {
 			power_pair.emplace_back(hand_numbers.back());
 		}
 		//JOKERが存在する場合
-		if (num_joker > 0) {
-			cout << num_joker;
-			num_joker--;
+		if (num_jokers_ > 0) {
+			cout << num_jokers_;
+			num_jokers_--;
 			hand_numbers.back() = power_pair.at(1);
 			return isPair(hand_numbers);
 		}
@@ -168,8 +168,8 @@ vector<int> CDealer::isPair(vector<int> hand_numbers) {
 			power_pair.emplace_back(hand_numbers.back());
 		}
 		//JOKERが存在する場合
-		if (num_joker > 0) {
-			num_joker--;
+		if (num_jokers_ > 0) {
+			num_jokers_--;
 			hand_numbers.back() = power_pair.at(1);
 			return isPair(hand_numbers);
 		}
@@ -189,8 +189,8 @@ vector<int> CDealer::isPair(vector<int> hand_numbers) {
 		else {
 			power_pair.emplace_back(hand_numbers.at(1));
 		}
-		if (num_joker > 0) {
-			num_joker--;
+		if (num_jokers_ > 0) {
+			num_jokers_--;
 			hand_numbers.back() = power_pair.at(1);
 			return isPair(hand_numbers);
 		}
@@ -209,8 +209,8 @@ vector<int> CDealer::isPair(vector<int> hand_numbers) {
 	else if (count == 6) { // フォーカード
 		power_pair.emplace_back(FourOfKind);
 		power_pair.emplace_back(hand_numbers.at(2));
-		if (num_joker > 0) {
-			num_joker--;
+		if (num_jokers_ > 0) {
+			num_jokers_--;
 			if (hand_numbers.at(2) == 14) {
 				hand_numbers.back() = 13;
 			}

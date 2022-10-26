@@ -5,11 +5,11 @@ class CCards;
 
 class CPlayer {
 private:
-	static int m_numPlayer;
-	string m_name;
+	static int num_players_;
+	string name_;
 public:
 	// 手札
-	vector<Card> m_hand;
+	vector<Card> hand_;
 	// コンストラクタ
 	CPlayer();
 	CPlayer(string name);
