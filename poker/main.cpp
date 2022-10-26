@@ -19,13 +19,14 @@ string hands[] = {
 };
 const int NUM_PLAYER = 1;
 const int NUM_CARDS = 52;
+const int NUM_HANDCARDS = 5;
 
 int main() {
 	// 初期作業
 	CCards cards(0);
 	CPlayer player[NUM_PLAYER];
 	for (int i = 0; i < NUM_PLAYER; i++) {
-		player[i].draw(cards, 5);
+		player[i].draw(cards, NUM_HANDCARDS);
 		player[i].sortHand();
 	}
 

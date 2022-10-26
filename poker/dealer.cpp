@@ -10,13 +10,13 @@ CDealer::CDealer() : num_joker(0) {
 vector<int> CDealer::checkHand(vector<Card> hand) {
 	// 数字のみの配列を作成
 	vector<int> hand_numbers;
-	for (int i = 0; i < hand.size(); i++) {
+	for (int i = 0; i < NUM_HANDCARDS; i++) {
 		hand_numbers.emplace_back(hand.at(i).number);
 	}
 	sort(hand_numbers.begin(), hand_numbers.end(), greater<int>());
 	//JOKERの数
 	num_joker = 0;
-	for (int i = 0; i < hand_numbers.size(); i++) {
+	for (int i = 0; i < NUM_HANDCARDS; i++) {
 		if (hand_numbers.at(i) == 0) {
 			num_joker++;
 		}
@@ -54,7 +54,7 @@ vector<int> CDealer::checkHand(vector<Card> hand) {
 // FALSE:-1を返す
 vector<int> CDealer::isFlush(vector<Card>& hand, vector<int> hand_numbers) {
 	bool result = true;
-	for (int i = 0; i < hand.size() - 1; i++) {
+	for (int i = 0; i < NUM_HANDCARDS - 1; i++) {
 		// 隣り合うスートが異なる場合フラッシュでない
 		if (hand.at(i).suit != hand.at(i + 1).suit && hand.at(i).suit != Joker && hand.at(i + 1).suit != Joker) {
 			result = false;
@@ -119,7 +119,7 @@ vector<int> CDealer::isPair(vector<int> hand_numbers) {
 	sort(hand_numbers.begin(), hand_numbers.end(), greater<int>());
 	// 比較成功回数を調べる
 	int count = 0;
-	for (int i = 0; i < 5; i++) {
+	for (int i = 0; i < NUM_HANDCARDS; i++) {
 		for (int j = 0; j < i; j++) {
 			if (hand_numbers.at(i) == hand_numbers.at(j) && hand_numbers.at(i) != 0) {
 				count++;

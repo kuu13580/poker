@@ -15,6 +15,7 @@ extern string numbers[];
 extern string hands[];
 extern const int NUM_PLAYER;
 extern const int NUM_CARDS;
+extern const int NUM_HANDCARDS;
 
 typedef enum
 {

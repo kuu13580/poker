@@ -19,7 +19,7 @@ CPlayer::CPlayer(string name) {
 // ŽèŽD•\Ž¦
 void CPlayer::show() {
 	cout << "ƒ" << m_name << "‚ÌŽèŽD„" << endl;
-	for (int i = 0; i < m_hand.size(); i++) {
+	for (int i = 0; i < NUM_HANDCARDS; i++) {
 		cout << marks[m_hand.at(i).suit] << numbers[m_hand.at(i).number] << " ";
 	}
 	cout << endl;
