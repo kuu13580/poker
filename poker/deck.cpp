@@ -70,7 +70,7 @@ Card CDeck::exchange(Card discard) {
 
 // 捨て札を戻す
 void CDeck::returnBurncards() {
-	num_deck_cards_ += burncards_.size();
+	num_deck_cards_ += (int)burncards_.size();
 	copy(burncards_.begin(), burncards_.end(), back_inserter(deck_));
 	burncards_.clear();
 	shuffle();
