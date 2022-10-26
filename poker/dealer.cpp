@@ -34,7 +34,7 @@ vector<int> CDealer::checkHand(vector<Card> hand) {
 		num_joker = buffer_num_joker;
 		power_straight = isStraight(hand_numbers);
 
-		if (power_flush.at(0) > 0 && power_straight.at(0) > 0) {
+		if (power_flush.at(0) > 0 && power_straight.at(0) > 0) { //フラッシュかつストレート
 			if (power_straight.at(1) == 14) {
 				return { RoyalFlush };
 			}
@@ -43,7 +43,7 @@ vector<int> CDealer::checkHand(vector<Card> hand) {
 		else if (power_flush.at(0) > 0) {
 			return power_flush;
 		}
-		else {
+		else if (power_straight.at(0) > 0) {
 			return power_straight;
 		}
 	}
