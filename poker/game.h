@@ -15,6 +15,7 @@ private:
 	CDealer dealer_;
 	// ディーラーボタン(親)
 	int dealer_btn_;
+	// new
 public:
 	//コンストラクタ
 	CGame();
