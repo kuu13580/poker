@@ -19,6 +19,7 @@ CGame::CGame() {
 //
 void CGame::startRound() {
 	initialize();
+	}
 }
 
 // ラウンド前の初期化
@@ -32,7 +33,7 @@ void CGame::initialize() {
 		players_.at(i).sortHand();
 	}
 
-}
+	}
 
 // ベッティングラウンド
 void CGame::bettingRound() {
