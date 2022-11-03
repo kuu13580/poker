@@ -237,6 +237,12 @@ vector<int> CDealer::isPair(vector<int> hand_numbers) {
 	else { // ƒm[ƒyƒA
 		power_pair.emplace_back(NoPair);
 		power_pair.insert(power_pair.end(), hand_numbers.begin(), hand_numbers.end());
+		//JOKER‚ª‘¶İ‚·‚éê‡
+		if (num_jokers_ > 0) {
+			num_jokers_--;
+			hand_numbers.back() = power_pair.at(1);
+			return isPair(hand_numbers);
+		}
 	}
 	return power_pair;
 }
