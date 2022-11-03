@@ -7,6 +7,7 @@ int CPlayer::num_players_ = 0;
 // コンストラクタ
 CPlayer::CPlayer(string name, int bankroll) {
 	// プレイヤーの数増加
+	player_no_ = num_players_;
 	num_players_++;
 	name_ = name;
 	bankroll_ = bankroll;
@@ -14,9 +15,8 @@ CPlayer::CPlayer(string name, int bankroll) {
 	hand_.reserve(NUM_HANDCARDS);
 }
 
-// 手札表示
-void CPlayer::show() {
-	cout << "＜" << name_ << "の手札＞" << endl;
+// 情報表示
+void CPlayer::showHand() {
 	for (int i = 0; i < NUM_HANDCARDS; i++) {
 		cout << marks[hand_.at(i).suit] << numbers[hand_.at(i).number] << " ";
 	}

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <functional>
 #include <random>
+#include <numeric>
 
 using namespace std;
 

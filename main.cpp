@@ -25,7 +25,10 @@ const int NUM_HANDCARDS = 5;
 
 int main() {
 	// 初期作業
-	CGame game;
+	int num_joker;
+	cout << "ジョーカーの数：";
+	cin >> num_joker;
+	CGame game(num_joker, 100);
 	game.startRound();
 
 	cout << "プログラム終了" << endl;

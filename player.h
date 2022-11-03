@@ -6,6 +6,7 @@ class CPlayer {
 private:
 	static int num_players_;
 	string name_;
+	int player_no_;
 	// 手札
 	vector<Card> hand_;
 	// 持ち金
@@ -13,11 +14,13 @@ private:
 public:
 	vector<Card> hand() { return hand_; };
 	int bankroll() { return bankroll_; };
+	string name() { return name_; };
+	int player_no() { return player_no_; };
 	// コンストラクタ
 	CPlayer(int bankroll) : CPlayer("プレイヤー" + to_string(num_players_ + 1), bankroll) {};
 	CPlayer(string name, int bankroll);
 	// 手札表示
-	void show();
+	void showHand();
 	// ドロー
 	void draw(CDeck& cards);
 	// n回ドロー
