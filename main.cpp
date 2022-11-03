@@ -2,28 +2,31 @@
 #include "deck.h"
 #include "player.h"
 #include "dealer.h"
+#include "pot.h"
 #include "game.h"
 
-string marks[] = { "ス", "ハ", "ダ", "ク", "J" };
-string numbers[] = { "NULL", "NULL", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A" };
+string marks[] = { "ス", "ハ", "ダ", "ク", "Joker" };
+string numbers[] = { "", "NULL", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A" };
 string hands[] = {
-	"NoPair",
-	"OnePair",
-	"TwoPair",
-	"ThreeOfKind",
-	"Straight",
-	"Flush",
-	"FullHouse",
-	"FourOfKind",
-	"StraightFlush",
-	"RoyalFlush",
+	"ブタ",
+	"ワンペア",
+	"ツーペア",
+	"スリーカード",
+	"ストレート",
+	"フラッシュ",
+	"フルハウス",
+	"フォーカード",
+	"ストレートフラッシュ",
+	"ロイヤルフラッシュ",
 };
-const int NUM_PLAYER = 1;
+const int NUM_PLAYER = 4;
 const int NUM_STD_CARDS = 52;
 const int NUM_HANDCARDS = 5;
 
 int main() {
 	// 初期作業
 	CGame game;
+	game.startRound();
+
 	cout << "プログラム終了" << endl;
 }	
