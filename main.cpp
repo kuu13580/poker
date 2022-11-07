@@ -23,6 +23,12 @@ const int NUM_PLAYER = 4;
 const int NUM_STD_CARDS = 52;
 const int NUM_HANDCARDS = 5;
 
+void refleshWindow() {
+	for (int i = 0; i < 50; i++) {
+		cout << endl;
+	}
+}
+
 int main() {
 	// 初期作業
 	int num_joker;
@@ -30,6 +36,5 @@ int main() {
 	cin >> num_joker;
 	CGame game(num_joker, 100);
 	game.startRound();
-
 	cout << "プログラム終了" << endl;
-}	
+}

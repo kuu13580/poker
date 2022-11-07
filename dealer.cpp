@@ -56,7 +56,7 @@ vector<int> CDealer::checkHand(vector<Card> hand) {
 	return power_pair;
 }
 
-// フラッシュチェック
+// フラッシュチェック　-NoPair前提
 // FALSE:-1を返す
 vector<int> CDealer::isFlush(vector<Card>& hand, vector<int> hand_numbers) {
 	bool result = true;
@@ -103,6 +103,7 @@ vector<int> CDealer::isStraight(vector<int> hand_numbers) {
 			break;
 		}
 	}
+	// カードの数の振れ幅
 	int difference = max - min;
 	if (difference <= 4) { //ストレート確定
 		int hicard = hand_numbers.front() + (4 - difference);

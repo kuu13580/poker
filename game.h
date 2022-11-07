@@ -10,6 +10,8 @@ class CGame {
 private:
 	// バイナリでフォールド状態
 	int is_fold_;
+	// バイナリでオールイン状態
+	int is_allin_;
 	// 山札
 	CDeck deck_;
 	// プレイヤー

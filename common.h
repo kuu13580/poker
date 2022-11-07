@@ -18,6 +18,8 @@ extern const int NUM_PLAYER;
 extern const int NUM_STD_CARDS;
 extern const int NUM_HANDCARDS;
 
+void refleshWindow();
+
 typedef enum
 {
 	Spades,

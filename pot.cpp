@@ -46,6 +46,7 @@ bool CPot::allIn(CPlayer player) {
 		return false;
 	}
 	players_bet_.at(player.player_no()) = player.bankroll();
+	return false;
 }
 
 // ベッティングラウンド終了処理
