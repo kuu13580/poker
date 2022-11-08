@@ -10,21 +10,22 @@ private:
 	// 現在のベット額
 	int current_bet_;
 	// ベット総額
-	int total_bet_;
+	int total_pot_;
 public:
 	int current_bet() { return current_bet_; };
+	int total_pot() { return total_pot_; };
 	// コンストラクタ
 	CPot();
 	// 初期化
 	void initialize();
 	// チェック・コール
-	bool call(CPlayer player);
+	bool call(CPlayer& player);
 	// ベット・レイズ
-	bool raise(CPlayer player);
+	bool raise(CPlayer& player);
 	// オールイン
-	bool allIn(CPlayer player);
+	bool allIn(CPlayer& player);
 	// ベッティングラウンド終了処理
-	void finishBetting();
+	void finishBetting(vector<CPlayer>& players, int is_allin);
 };
 
 

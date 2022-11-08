@@ -28,10 +28,13 @@ void CGame::startRound() {
 	// 参加費
 	refleshWindow();
 	bettingRound();
+	pot_.finishBetting(players_, is_allin_);
 	drawRound();
 	bettingRound();
+	pot_.finishBetting(players_, is_allin_);
 	drawRound();
 	bettingRound();
+	pot_.finishBetting(players_, is_allin_);
 	showDown();
 	// 親を移す
 	dealer_btn_++;
@@ -65,6 +68,7 @@ void CGame::bettingRound() {
 			i++;
 			continue;
 		}
+		cout << "ポット総額    " << pot_.total_pot() << endl << endl;
 		cout << "<<< ベッティングラウンド >>>" << endl;
 		cout << current_player.name() << "のターン   残金：" << current_player.bankroll() << "   現在のベット額：" << pot_.current_bet() << endl;
 		cout << "手札：";
@@ -107,11 +111,15 @@ void CGame::bettingRound() {
 void CGame::drawRound() {
 	int n = 0;
 	for (int i = 0; i < NUM_PLAYER; i++) {
+		if ((is_fold_ & (1 << i)) != 0) { // フォールドしている
+			continue;
+		}
 		cout << "<<< ドローラウンド >>>" << endl;
 		players_.at(i).showHand();
 		dealer_.viewHand(players_.at(i).hand());
 		cout << "交換する手札の数 : ";
 		cin >> n;
+		// 無効な入力
 		if (n < 0 || NUM_HANDCARDS < n) {
 			i--;
 			continue;
@@ -131,7 +139,7 @@ void CGame::drawRound() {
 
 // ショーダウン
 void CGame::showDown() {
-	// オールインプレイヤーを戻す
+	// オールインプレイヤーを戻す(フォールド属性)
 	is_fold_ ^= is_allin_;
 	// プレイヤーの強さの配列取得
 	vector<vector<int>> players_power;

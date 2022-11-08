@@ -31,6 +31,8 @@ public:
 	void exchangeHand(int n, vector<int> selected, CDeck& cards);
 	// èDíœ
 	void clearHand() { hand_.clear(); };
+	// ƒoƒ“ƒNƒ[ƒ‹ˆ—
+	void payout(int payout) { bankroll_ -= payout; };
 };
 
 
