@@ -59,13 +59,13 @@ void CGame::bettingRound() {
 	int current_player_no = 0;
 	CPlayer current_player = players_.at(0);
 	for (int i = 0; i < NUM_PLAYER;) {
-		cout << "<<< ベッティングラウンド >>>" << endl;
 		current_player = players_.at(current_player_no);
 		if ((is_fold_ & (1 << current_player_no)) != 0) { // フォールドしている
 			current_player_no = (current_player_no + 1) % NUM_PLAYER;
 			i++;
 			continue;
 		}
+		cout << "<<< ベッティングラウンド >>>" << endl;
 		cout << current_player.name() << "のターン   残金：" << current_player.bankroll() << "   現在のベット額：" << pot_.current_bet() << endl;
 		cout << "手札：";
 		current_player.showHand();
