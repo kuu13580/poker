@@ -10,7 +10,7 @@
 CGame::CGame(int num_joker, int ante) {
 	deck_ = CDeck::CDeck(num_joker);
 	dealer_ = CDealer::CDealer();
-	pot_ = CPot::CPot();
+	pot_ = CPot::CPot(ante);
 	dealer_btn_ = 0;
 	// 初期作業
 	players_.reserve(NUM_PLAYER);
@@ -18,26 +18,23 @@ CGame::CGame(int num_joker, int ante) {
 		players_.emplace_back(CPlayer(1000));
 	}
 	is_fold_ = 0b0;
-	ante_ = ante;
 	is_allin_ = 0b0;
 }
 
 //
 void CGame::startRound() {
 	initialize();
-	// 参加費
-	refleshWindow();
-	bettingRound();
-	pot_.finishBetting(players_, is_allin_);
+	pot_.betAnte(players_, is_allin_, is_fold_);
+	system("cls");
+	pot_.bettingRound(players_, is_allin_, is_fold_);
 	drawRound();
-	bettingRound();
-	pot_.finishBetting(players_, is_allin_);
+	pot_.bettingRound(players_, is_allin_, is_fold_);
 	drawRound();
-	bettingRound();
-	pot_.finishBetting(players_, is_allin_);
+	pot_.bettingRound(players_, is_allin_, is_fold_);
 	showDown();
 	// 親を移す
 	dealer_btn_++;
+	startRound();
 }
 
 // ラウンド前の初期化
@@ -46,77 +43,29 @@ void CGame::initialize() {
 	deck_.initialize();
 	pot_.initialize();
 	// プレイヤーの初期化
-	for (int i = 0; i < NUM_PLAYER; i++) {
-		players_.at(i).clearHand();
-		players_.at(i).draw(deck_, NUM_HANDCARDS);
-		players_.at(i).sortHand();
+	for (CPlayer& player : players_) {
+		player.clearHand();
+		player.draw(deck_, NUM_HANDCARDS);
+		player.sortHand();
 	}
 	// 各種状態の初期化
 	is_fold_ = 0b0;
 	is_allin_ = 0b0;
 }
 
-// ベッティングラウンド
-void CGame::bettingRound() {
-	int action = 0;
-	int current_player_no = 0;
-	CPlayer current_player = players_.at(0);
-	for (int i = 0; i < NUM_PLAYER;) {
-		current_player = players_.at(current_player_no);
-		if ((is_fold_ & (1 << current_player_no)) != 0) { // フォールドしている
-			current_player_no = (current_player_no + 1) % NUM_PLAYER;
-			i++;
-			continue;
-		}
-		cout << "ポット総額    " << pot_.total_pot() << endl << endl;
-		cout << "<<< ベッティングラウンド >>>" << endl;
-		cout << current_player.name() << "のターン   残金：" << current_player.bankroll() << "   現在のベット額：" << pot_.current_bet() << endl;
-		cout << "手札：";
-		current_player.showHand();
-		dealer_.viewHand(current_player.hand());
-		cout << "チェック・コール(0) ベット・レイズ(1) フォールド(2) オールイン(3): ";
-		cin >> action;
-		if (action == 0) { // コール・チェック
-			if (!pot_.call(current_player)) {
-				continue;
-			}
-			current_player_no = (current_player_no + 1) % NUM_PLAYER;
-			i++;
-		}
-		else if (action == 1) { // レイズ
-			if (!pot_.raise(current_player)) {
-				continue;
-			}
-			current_player_no = (current_player_no + 1) % NUM_PLAYER;
-			i = 1;
-		}
-		else if (action == 2) { // フォールド
-			is_fold_ |= 1 << current_player_no;
-			i++;
-			current_player_no = (current_player_no + 1) % NUM_PLAYER;
-		}
-		else if (action == 3) { // オールイン
-			pot_.allIn(current_player);
-			is_allin_ |= 1 << current_player_no;
-			is_fold_ |= 1 << current_player_no;
-			i++;
-			current_player_no = (current_player_no + 1) % NUM_PLAYER;
-		}
-		refleshWindow();
-	}
-
-}
-
 // ドローラウンド
 void CGame::drawRound() {
 	int n = 0;
 	for (int i = 0; i < NUM_PLAYER; i++) {
-		if ((is_fold_ & (1 << i)) != 0) { // フォールドしている
+		if ((is_fold_ & (1 << i)) != 0) { // フォールドしていたら飛ばす
 			continue;
 		}
-		cout << "<<< ドローラウンド >>>" << endl;
+		// 画面表示
+		system("cls");
+		cout << "<<< ドローラウンド >>>" << endl << endl;
+		cout << players_.at(i).name() << "のターン" << endl;
 		players_.at(i).showHand();
-		dealer_.viewHand(players_.at(i).hand());
+		dealer_.viewHand(players_.at(i).getHand());
 		cout << "交換する手札の数 : ";
 		cin >> n;
 		// 無効な入力
@@ -132,35 +81,36 @@ void CGame::drawRound() {
 		players_.at(i).exchangeHand(n, selected, deck_);
 		cout << endl << "交換後:";
 		players_.at(i).showHand();
-		dealer_.viewHand(players_.at(i).hand());
-		refleshWindow();
+		dealer_.viewHand(players_.at(i).getHand());
+		cin.get();
+		system("cls");
 	}
 }
 
 // ショーダウン
 void CGame::showDown() {
-	// オールインプレイヤーを戻す(フォールド属性)
-	is_fold_ ^= is_allin_;
 	// プレイヤーの強さの配列取得
 	vector<vector<int>> players_power;
-	vector<int> fold = {-1};
+	vector<int> fold = { -1 };
 	for (int i = 0; i < NUM_PLAYER; i++) {
 		if ((is_fold_ & (1 << i)) != 0) {
 			players_power.emplace_back(fold);
 			continue;
 		}
-		players_power.emplace_back(dealer_.checkHand(players_.at(i).hand()));
+		players_power.emplace_back(dealer_.checkHand(players_.at(i).getHand()));
 	}
+
+
 	// 勝者を決定
 	vector<int> winner = { 0 };
 	for (int i = 1; i < NUM_PLAYER; i++) {
-		if (players_power.at(winner.at(0)).at(0) < players_power.at(i).at(0)) { // 次のほうが強い
+		if (players_power.at(winner.at(0)).front() < players_power.at(i).front()) { // 次のほうが強い
 			winner.clear();
 			winner.emplace_back(i);
 		}
-		else if (players_power.at(winner.at(0)).at(0) == players_power.at(i).at(0)) { // 役が一緒
+		else if (players_power.at(winner.at(0)).front() == players_power.at(i).front()) { // 役が一緒
 			bool chop = true;
-			for(int j = 0; j < players_power.at(winner.at(0)).size(); j++){
+			for (int j = 0; j < players_power.at(winner.at(0)).size(); j++) {
 				if (players_power.at(winner.at(0)).at(j) < players_power.at(i).at(j)) {
 					chop = false;
 					winner.clear();
@@ -177,9 +127,33 @@ void CGame::showDown() {
 			}
 		}
 	}
-	for (auto itr = winner.begin(); itr != winner.end(); itr++) {
-		cout << " " << players_.at(*itr).name();
-	}
-	cout << "が勝者" << endl;
+
 	// 賞金の計算
+	int prize = pot_.total_pot() / winner.size();
+	for (int i : winner) {
+		players_.at(i).payout(-prize);
+	}
+
+	// 結果の表示
+	system("cls");
+	cout << "<<< 終了 >>>" << endl;
+	cout << "ポット合計： " << pot_.total_pot() << endl << endl;
+	for (int i = 0; i < NUM_PLAYER; i++) {
+		CPlayer player = players_.at(i);
+		if ((is_fold_ & (1 << i)) != 0) { // フォールド
+			cout << "fold ";
+		}
+		else if(find(winner.begin(), winner.end(), i) != winner.end()){ //勝利
+			cout << " win ";
+		}
+		else {
+			cout << "     ";
+		}
+		cout << "<" << player.name() << "> 残金：" << player.bankroll() << endl;
+		cout << "手札： ";
+		player.showHand();
+		cout << "役： " << hands[players_power.at(i).front()] << endl << endl;
+	}
+	int wait = cin.get();
+	wait = cin.get();
 }

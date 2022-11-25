@@ -13,9 +13,9 @@ vector<int> CDealer::checkHand(vector<Card> hand) {
 	hand_numbers.reserve(NUM_HANDCARDS);
 	for (int i = 0; i < NUM_HANDCARDS; i++) {
 		hand_numbers.emplace_back(hand.at(i).number);
-	}
+	};
 	sort(hand_numbers.begin(), hand_numbers.end(), greater<int>());
-	//JOKERの数
+	//JOKERの数をチェック
 	num_jokers_ = 0;
 	for (int i = 0; i < NUM_HANDCARDS; i++) {
 		if (hand_numbers.at(i) == 0) {
@@ -28,32 +28,36 @@ vector<int> CDealer::checkHand(vector<Card> hand) {
 	power_pair.reserve(NUM_HANDCARDS + 1);
 	power_pair = isPair(hand_numbers);
 	//フラッシュ・ストレートチェック
-	if (power_pair.at(0) == NoPair) {
-		//出力用のvector準備
-		vector<int> power_flush;
-		vector<int> power_straight;
-		power_flush.reserve(NUM_HANDCARDS + 1);
-		power_straight.reserve(NUM_HANDCARDS + 1);
-		//役を確認
-		num_jokers_ = buffer_num_joker;
-		power_flush = isFlush(hand, hand_numbers);
-		num_jokers_ = buffer_num_joker;
-		power_straight = isStraight(hand_numbers);
-		// 出力に応じて分岐
-		if (power_flush.at(0) > 0 && power_straight.at(0) > 0) { //フラッシュかつストレート
-			if (power_straight.at(1) == 14) {
-				return { RoyalFlush };
-			}
-			return { StraightFlush,  power_straight.at(1) };
+	//出力用のvector準備
+	vector<int> power_flush;
+	vector<int> power_straight;
+	power_flush.reserve(NUM_HANDCARDS + 1);
+	power_straight.reserve(NUM_HANDCARDS + 1);
+	//役を確認
+	num_jokers_ = buffer_num_joker;
+	power_flush = isFlush(hand, hand_numbers);
+	num_jokers_ = buffer_num_joker;
+	power_straight = isStraight(hand_numbers);
+	// 出力に応じて分岐
+	if (power_flush.front() > 0 && power_straight.front() > 0) { //フラッシュかつストレート
+		if (power_straight.at(1) == 14  || num_jokers_) {
+			return { RoyalFlush };
 		}
-		else if (power_flush.at(0) > 0) {
-			return power_flush;
-		}
-		else if (power_straight.at(0) > 0) {
-			return power_straight;
-		}
+		return { StraightFlush,  power_straight.at(1) };
 	}
-	return power_pair;
+	else if (FullHouse <= power_pair.front()) {
+		return power_pair;
+	}
+	else if (power_flush.front() > 0) {
+		return power_flush;
+	}
+	else if (power_straight.front() > 0) {
+		return power_straight;
+	}
+	else {
+		return power_pair;
+	}
+
 }
 
 // フラッシュチェック　-NoPair前提
@@ -123,7 +127,7 @@ vector<int> CDealer::isStraight(vector<int> hand_numbers) {
 
 //ペアチェック
 vector<int> CDealer::isPair(vector<int> hand_numbers) {
-	//↓要改善な気がする
+	// 並べ替え
 	sort(hand_numbers.begin(), hand_numbers.end(), greater<int>());
 	// 比較成功回数を調べる
 	int count = 0;
@@ -252,7 +256,7 @@ vector<int> CDealer::isPair(vector<int> hand_numbers) {
 void CDealer::viewHand(vector<Card> hand) {
 	vector<int> result = checkHand(hand);
 	result.reserve(NUM_HANDCARDS + 1);
-	cout << "役 : " << hands[result.at(0)] << endl;
+	cout << "役 : " << hands[result.front()] << endl;
 	// 配列の表示
 	/*cout << "配列 : [";
 	for (int i = 0; i < result.size(); i++) {

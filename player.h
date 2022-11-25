@@ -12,7 +12,7 @@ private:
 	// ‚¿‹à
 	int bankroll_;
 public:
-	vector<Card> hand() { return hand_; };
+	vector<Card> getHand() { return hand_; };
 	int bankroll() { return bankroll_; };
 	string name() { return name_; };
 	int player_no() { return player_no_; };

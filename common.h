@@ -8,6 +8,9 @@
 #include <functional>
 #include <random>
 #include <numeric>
+#include <stdlib.h>
+#include <ios>
+#include <iomanip>
 
 using namespace std;
 
@@ -18,7 +21,6 @@ extern const int NUM_PLAYER;
 extern const int NUM_STD_CARDS;
 extern const int NUM_HANDCARDS;
 
-void refleshWindow();
 
 typedef enum
 {

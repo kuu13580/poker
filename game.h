@@ -22,8 +22,6 @@ private:
 	CDealer dealer_;
 	// ディーラーボタン(親)
 	int dealer_btn_;
-	// アンティ(参加費)
-	int ante_;
 public:
 	//コンストラクタ
 	CGame() : CGame(0, 100) {};
@@ -32,8 +30,6 @@ public:
 	void startRound();
 	// ラウンドに関する初期化
 	void initialize();
-	// ベッティングラウンド
-	void bettingRound();
 	// ドローラウンド
 	void drawRound();
 	// ショーダウン
