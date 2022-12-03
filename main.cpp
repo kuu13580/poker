@@ -25,10 +25,14 @@ const int NUM_HANDCARDS = 5;
 
 int main() {
 	// 初期作業
-	int num_joker;
+	int num_joker, bankroll, ante;
 	cout << "ジョーカーの数：";
-	cin >> num_joker;
-	CGame game(num_joker, 100);
+	cin >> num_joker; 
+	cout << "初期持ち金：";
+	cin >> bankroll;
+	cout << "アンティ(参加費)：";
+	cin >> ante;
+	CGame game(num_joker, bankroll, ante);
 	game.startRound();
 	cout << "プログラム終了" << endl;
 	return 0;

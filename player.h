@@ -16,6 +16,8 @@ public:
 	int bankroll() { return bankroll_; };
 	string name() { return name_; };
 	int player_no() { return player_no_; };
+	// オープンベットの見せ札
+	vector<int> public_cards;
 	// コンストラクタ
 	CPlayer(int bankroll) : CPlayer("プレイヤー" + to_string(num_players_ + 1), bankroll) {};
 	CPlayer(string name, int bankroll);

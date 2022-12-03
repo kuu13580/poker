@@ -18,9 +18,13 @@ private:
 	CDealer dealer_;
 	// アンティ
 	int ante_;
+	// オープンベットされているか(プレイヤーno)
+	int is_opened;
 public:
 	int current_bet() { return current_bet_; };
 	int total_pot() { return total_pot_; };
+	// オープンベットの有効化
+	bool is_final_;
 	// コンストラクタ
 	CPot() : CPot(100) {};
 	CPot(int ante);
@@ -35,7 +39,7 @@ public:
 	// オールイン
 	bool allIn(CPlayer& player);
 	// ベッティングラウンド
-	void bettingRound(vector<CPlayer>& players, int& is_allin, int& is_fold);
+	void bettingRound(vector<CPlayer>& players, int& is_allin, int& is_fold, int dealer_btn);
 };
 
 
