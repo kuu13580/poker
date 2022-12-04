@@ -7,18 +7,14 @@
 
 
 // コンストラクタ
-CGame::CGame(int num_joker, int bankroll, int ante) {
-	deck_ = CDeck::CDeck(num_joker);
-	dealer_ = CDealer::CDealer();
-	pot_ = CPot::CPot(ante);
-	dealer_btn_ = 0;
+CGame::CGame(int num_joker, int bankroll, int ante)
+	: deck_(CDeck(num_joker)), pot_(CPot(ante)), dealer_btn_(0), is_fold_(0b0), is_allin_(0b0)
+{
 	// 初期作業
 	players_.reserve(NUM_PLAYER);
 	for (int i = 0; i < NUM_PLAYER; i++) {
 		players_.emplace_back(CPlayer(bankroll));
 	}
-	is_fold_ = 0b0;
-	is_allin_ = 0b0;
 }
 
 // ラウンド開始
@@ -134,7 +130,7 @@ void CGame::showDown() {
 	}
 
 	// 賞金の計算
-	int prize = pot_.total_pot() / winner.size();
+	int prize = pot_.total_pot() / (int)winner.size();
 	for (int i : winner) {
 		players_.at(i).payout(-prize);
 	}

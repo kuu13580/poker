@@ -24,8 +24,7 @@ private:
 	int dealer_btn_;
 public:
 	//コンストラクタ
-	CGame() : CGame(0, 1000, 100) {};
-	CGame(int num_joker, int bankroll, int ante);
+	CGame(int num_joker = 0, int bankroll = 1000, int ante = 100);
 	// 1ラウンドを開始する
 	void startRound();
 	// ラウンドに関する初期化

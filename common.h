@@ -5,12 +5,16 @@
 #include <vector>
 #include <string>
 #include <algorithm>
-#include <functional>
+//#include <functional>
 #include <random>
 #include <numeric>
 #include <stdlib.h>
 #include <ios>
 #include <iomanip>
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#pragma comment(lib, "Ws2_32.lib")
+
 
 using namespace std;
 
@@ -53,5 +57,10 @@ typedef enum Hand {
 	StraightFlush,
 	RoyalFlush,
 }Hand;
+
+typedef struct TCPSocket {
+	SOCKET socket;
+	struct sockaddr_in addr;
+};
 
 #endif //  _H_COMMON_

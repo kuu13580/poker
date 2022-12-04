@@ -5,12 +5,10 @@
 int CPlayer::num_players_ = 0;
 
 // コンストラクタ
-CPlayer::CPlayer(string name, int bankroll) {
+CPlayer::CPlayer(string name, int bankroll)
+	:name_(name), player_no_(num_players_), bankroll_(bankroll){
 	// プレイヤーの数増加
-	player_no_ = num_players_;
 	num_players_++;
-	name_ = name;
-	bankroll_ = bankroll;
 	//vectorの領域確保
 	hand_.reserve(NUM_HANDCARDS);
 }

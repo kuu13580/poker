@@ -128,20 +128,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="client.cpp" />
     <ClCompile Include="dealer.cpp" />
+    <ClCompile Include="deck.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="deck.cpp" />
     <ClCompile Include="player.cpp" />
     <ClCompile Include="pot.cpp" />
+    <ClCompile Include="server.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="deck.h" />
+    <ClInclude Include="client.h" />
     <ClInclude Include="common.h" />
     <ClInclude Include="dealer.h" />
+    <ClInclude Include="deck.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="pot.h" />
+    <ClInclude Include="server.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

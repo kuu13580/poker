@@ -4,8 +4,7 @@
 #include "pot.h"
 
 // コンストラクタ
-CPot::CPot(int ante) {
-	ante_ = ante;
+CPot::CPot(int ante): ante_(ante) {
 	initialize();
 }
 

@@ -26,8 +26,7 @@ public:
 	// オープンベットの有効化
 	bool is_final_;
 	// コンストラクタ
-	CPot() : CPot(100) {};
-	CPot(int ante);
+	CPot(int ante = 100);
 	// 初期化
 	void initialize();
 	// アンティ回収

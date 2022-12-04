@@ -2,9 +2,8 @@
 #include "deck.h"
 
 // コンストラクタ
-CDeck::CDeck(int num_jokers) : num_deck_cards_(0) {
-	num_jokers_ = num_jokers;
-	num_deck_cards_ = NUM_STD_CARDS + num_jokers;
+CDeck::CDeck(int num_jokers)
+	: num_deck_cards_(NUM_STD_CARDS + num_jokers), num_jokers_(num_jokers) {
 	// vectorの領域確保
 	deck_.reserve(num_deck_cards_);
 	int buffer = num_deck_cards_ - NUM_HANDCARDS * NUM_PLAYER;

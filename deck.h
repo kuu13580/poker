@@ -13,8 +13,7 @@ private:
 public:
 	int num_deck_cards() { return num_deck_cards_; };
 	// コンストラクタ
-	CDeck() : CDeck(0) {};
-	CDeck(int num_jokers);
+	CDeck(int num_jokers = 0);
 	// 表示
 	void show();
 	// シャッフル
