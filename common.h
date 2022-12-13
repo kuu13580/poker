@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <sstream>
 #include <algorithm>
 //#include <functional>
 #include <random>
@@ -18,13 +19,14 @@
 
 using namespace std;
 
+
 extern string marks[];
 extern string numbers[];
 extern string hands[];
-extern const int NUM_PLAYER;
-extern const int NUM_STD_CARDS;
-extern const int NUM_HANDCARDS;
-
+#define NUM_PLAYER 1
+#define NUM_STD_CARDS 52
+#define NUM_HANDCARDS 5
+#define DATA_MAX_SIZE 100
 
 typedef enum
 {
@@ -61,6 +63,33 @@ typedef enum Hand {
 typedef struct TCPSocket {
 	SOCKET socket;
 	struct sockaddr_in addr;
-};
+}TCPSocket;
+
+typedef enum Action {
+	CheckCall,
+	Raise,
+	Fold,
+	Allin,
+	Open,
+}Action;
+
+typedef enum Command {
+	Wait,
+	Success,
+	Response,
+	Request_ChangeHand,
+	Request_Action,
+	Set_Fold,
+	Set_Allin,
+	Set_PlayersBet,
+	Set_CurrentBet,
+	Set_totalPot,
+	Set_Opened,
+	Set_Bankroll,
+	Reset_PlayersBet,
+	FinishBettingRound,
+	Set_HandCards,
+	FinishDrawRound,
+}Command;
 
 #endif //  _H_COMMON_

@@ -37,15 +37,19 @@ void CPlayer::draw(CDeck& cards, int n) {
 
 
 // ŽèŽDŒðŠ·
-void CPlayer::exchangeHand(int n, vector<int> selected, CDeck& cards) {
-	if (cards.num_deck_cards() < n) {
+void CPlayer::exchangeHand(int selected, CDeck& cards) {
+	vector<int> arr_selected;
+	for (int i = 0; i < NUM_HANDCARDS; i++) {
+		if (selected & (1 << i)) arr_selected.emplace_back(i);
+	}
+	if (cards.num_deck_cards() < arr_selected.size()) {
 		cards.returnBurncards();
 	}
 	Card new_card;
-	for (int i = 0; i < n; i++) {
-		new_card = cards.exchange(hand_.at(selected[i]));
-		hand_.erase(hand_.begin() + selected[i]);
-		hand_.insert(hand_.begin() + selected[i], new_card);
+	for (int i = 0; i < arr_selected.size(); i++) {
+		new_card = cards.exchange(hand_.at(arr_selected[i]));
+		hand_.erase(hand_.begin() + arr_selected[i]);
+		hand_.insert(hand_.begin() + arr_selected[i], new_card);
 	}
 	sortHand();
 }

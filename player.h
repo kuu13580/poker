@@ -16,8 +16,14 @@ public:
 	int bankroll() { return bankroll_; };
 	string name() { return name_; };
 	int player_no() { return player_no_; };
-	// オープンベットの見せ札
-	vector<int> public_cards;
+	void setName(string name) { name_ = name; };
+	void setBankroll(int num) { bankroll_ = num; }
+	void setHand(Card card, int pos) {
+		hand_.resize(NUM_HANDCARDS);
+		hand_.at(pos) = card;
+	}
+	// オープンベットの見せ札(5桁の01フラッグ)
+	int public_cards;
 	// コンストラクタ
 	CPlayer(int bankroll) : CPlayer("プレイヤー" + to_string(num_players_ + 1), bankroll) {};
 	CPlayer(string name, int bankroll);
@@ -30,7 +36,7 @@ public:
 	// 手札ソート
 	void sortHand() { sort(hand_.begin(), hand_.end()); };
 	// 手札交換
-	void exchangeHand(int n, vector<int> selected, CDeck& cards);
+	void exchangeHand(int selected, CDeck& cards);
 	// 手札削除
 	void clearHand() { hand_.clear(); };
 	// バンクロール処理
