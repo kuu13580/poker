@@ -9,6 +9,7 @@ public:
 	string convertData(vector<int>& data);
 	Card itoc(int number);
 	int ctoi(Card card);
+	void addDivideInt(vector<int>& v, int number);
 };
 
 

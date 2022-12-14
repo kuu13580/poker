@@ -57,8 +57,10 @@ string CNetwork::convertData(vector<int>& data) {
 		exit(0);
 	}
 	// ”š‚ğ‚Ğ‚Æ‚Â‚Ğ‚Æ‚Âˆ—(16i”)
+	cout << "send : ";
 	string output;
 	for (int i : data) {
+		cout << i << " ";
 		stringstream ss;
 		if (i == -1) {
 			ss << "ff";
@@ -68,6 +70,7 @@ string CNetwork::convertData(vector<int>& data) {
 		}
 		output += ss.str();
 	}
+	cout << endl;
 	return output;
 }
 
@@ -79,4 +82,14 @@ Card CNetwork::itoc(int number) {
 }
 int CNetwork::ctoi(Card card) {
 	return (int)card.suit * 14 + (int)card.number;
+}
+
+void CNetwork::addDivideInt(vector<int>& v, int number) {
+	vector<int> result;
+	uint32_t mask = 0b11111111 << 24;
+	for (int i = 0; i < 4; i++) {
+		result.emplace_back(((number)&mask) >> 24);
+		number <<= 8;
+	}
+	v.insert(v.end(), result.begin(), result.end());
 }

@@ -48,6 +48,7 @@ vector<string> CServer::recvData() {
 #pragma omp parallel for
 	for (int client_no = 0; client_no < NUM_PLAYER; client_no++) {
 		char buf[DATA_MAX_SIZE];
+		memset(buf, 0, sizeof(buf));
 		recv(client_sockets_.at(client_no).socket, buf, sizeof(buf), 0);
 		data.at(client_no) = buf;
 	}
@@ -56,17 +57,22 @@ vector<string> CServer::recvData() {
 
 void CServer::sendData(string data) {
 	// すべてのクライアントにデータ送信
+	cout << "send：" << data << endl;
+#pragma omp parallel for
 	for (int i = 0; i < NUM_PLAYER; i++) {
-		send(client_sockets_.at(i).socket, data.c_str(), sizeof(data), 0);
+		send(client_sockets_.at(i).socket, data.c_str(), data.length(), 0);
 	}
 }
 
 void CServer::sendDataEach(string data, int client_no) {
-	send(client_sockets_.at(client_no).socket, data.c_str(), sizeof(data), 0);
+	send(client_sockets_.at(client_no).socket, data.c_str(), data.length(), 0);
+	cout << "send to " << client_no << " : " << data << endl;
 }
 
 string CServer::recvDataEach(int client_no) {
 	char buf[DATA_MAX_SIZE];
+	memset(buf, 0, sizeof(buf));
 	recv(client_sockets_.at(client_no).socket, buf, sizeof(buf), 0);
+	cout << "recv from " << client_no << " : " << buf << endl;
 	return buf;
 }

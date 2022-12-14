@@ -65,14 +65,11 @@ int main() {
 		int num_joker, bankroll, ante;
 		stringstream ss;
 		ss << client.recvData();
-		cout << "ss : " << ss.str() << endl;
 		ss >> num_joker >> bankroll >> ante;
+		cout << num_joker << bankroll << ante << endl;
 		vector<string> players_name(NUM_PLAYER);
 		for (int i = 0; i < NUM_PLAYER; i++) {
 			ss >> players_name.at(i);
-		}
-		for (string name : players_name) {
-			cout << name << endl;
 		}
 		// ゲームを立ち上げる
 		CGameClient game(players_name, num_joker, bankroll, ante);

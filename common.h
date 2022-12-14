@@ -6,6 +6,7 @@
 #include <string>
 #include <sstream>
 #include <algorithm>
+#include <bitset>
 //#include <functional>
 #include <random>
 #include <numeric>
@@ -23,10 +24,10 @@ using namespace std;
 extern string marks[];
 extern string numbers[];
 extern string hands[];
-#define NUM_PLAYER 1
+#define NUM_PLAYER 2
 #define NUM_STD_CARDS 52
 #define NUM_HANDCARDS 5
-#define DATA_MAX_SIZE 100
+#define DATA_MAX_SIZE 500
 
 typedef enum
 {
@@ -79,16 +80,18 @@ typedef enum Command {
 	Response,
 	Request_ChangeHand,
 	Request_Action,
+	Set_Begin,
 	Set_Fold,
 	Set_Allin,
 	Set_PlayersBet,
 	Set_CurrentBet,
-	Set_totalPot,
+	Set_TotalPot,
 	Set_Opened,
 	Set_Bankroll,
+	Set_HandCards,
+	Set_End,
 	Reset_PlayersBet,
 	FinishBettingRound,
-	Set_HandCards,
 	FinishDrawRound,
 }Command;
 

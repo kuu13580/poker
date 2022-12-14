@@ -23,24 +23,27 @@ CClient::~CClient() {
 // サーバーからデータ受信
 string CClient::recvData() {
 	char buf[DATA_MAX_SIZE];
+	memset(buf, 0, sizeof(buf));
 	if (recv(client_socket_, buf, sizeof(buf), 0) == -1) {
 		cout << "recv ERROR :" << WSAGetLastError() << endl;
 		system("pause");
 		exit(0);
 	}
+	cout << "recv : " << buf << endl;
+	cout << endl;
 	return buf;
 }
 vector<int> CClient::recvConvertedData() {
-	string data = recvData();
-	return convertData(data);
+	return convertData(recvData());
 }
 
 
 // サーバーにデータ送信
 void CClient::sendData(string data) {
-	if (send(client_socket_, data.c_str(), sizeof(data), 0) == -1) {
+	if (send(client_socket_, data.c_str(), data.length(), 0) == -1) {
 		cout << "send ERROR :" << WSAGetLastError() << endl;
 		system("pause");
 		exit(0);
 	};
+	cout << "send : " << data;
 }
