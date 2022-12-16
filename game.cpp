@@ -230,7 +230,7 @@ void CGameServer::bettingRound() {
 		if (recv_data.at(0) != Response || recv_data.at(1) != current_player_no) continue;
 		// データ処理・処理結果送信
 		vector<int> send_data = {};
-		switch (send_data.at(2)) {
+		switch (recv_data.at(2)) {
 		case CheckCall: // コール・チェック
 			if (!call(current_player)) continue;
 			current_player_no = (current_player_no + 1) % NUM_PLAYER;
@@ -241,7 +241,7 @@ void CGameServer::bettingRound() {
 			break;
 		case Raise: // レイズ(オープン状態で不可)
 			if (0 <= is_opened_) break;
-			if (!raise(current_player, send_data.at(3))) continue;
+			if (!raise(current_player, recv_data.at(3))) continue;
 			current_player_no = (current_player_no + 1) % NUM_PLAYER;
 			i = 1;
 			send_data = { Set_PlayersBet, current_player_no};
@@ -278,10 +278,10 @@ void CGameServer::bettingRound() {
 			break;
 		case Open: // オープンベット(2倍でベット)
 			if (!is_final_) break;
-			if (!raise(current_player, send_data.at(3))) continue;
+			if (!raise(current_player, recv_data.at(3))) continue;
 			// 開示する手札
-			current_player.public_cards = send_data.at(4);
-			current_bet_ = send_data.at(3) * 2;
+			current_player.public_cards = recv_data.at(4);
+			current_bet_ = recv_data.at(3) * 2;
 			players_bet_.at(current_player_no) = current_bet_;
 			is_opened_ = current_player_no;
 			i = 1;
@@ -338,6 +338,7 @@ void CGameClient::bettingRound() {
 		// 以下受信データがリクエストクエリ
 		if (data.at(0) != Request_Action) {
 			cout << "Betting Round Data Format ERROR" << endl;
+			system("pause");
 			exit(0);
 		}
 		int current_player_no = data.at(1);
@@ -409,7 +410,10 @@ void CGameClient::bettingRound() {
 				is_send = true;
 				break;
 			case Allin: // オールイン
-				if (current_player.bankroll() <= 0) exit(0);
+				if (current_player.bankroll() <= 0) {
+					system("pause");
+					exit(0);
+				}
 				// データ送信(レスポンス)
 				data.emplace_back(Allin);
 				network.sendData(data);

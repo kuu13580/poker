@@ -28,6 +28,7 @@ void CPlayer::draw(CDeck& cards) {
 void CPlayer::draw(CDeck& cards, int n) {
 	if (n < 1) {
 		cout << "ドロー回数エラー" << endl;
+		system("pause");
 		exit(0);
 	}
 	for (int i = 0; i < n; i++) {

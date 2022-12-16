@@ -20,6 +20,7 @@ void CServer::initServer() {
 	client_sockets_.resize(NUM_PLAYER);
 	if (listen(server_socket_, 5) != 0) {
 		cout << "listen ERROR : " << WSAGetLastError() << endl;
+		system("pause");
 		exit(0);
 	}
 	string tmp_name[NUM_PLAYER];

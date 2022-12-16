@@ -22,6 +22,7 @@ SOCKET CNetwork::makeSocket() {
 			cout << "第二引数が有効なポインタではありません" << endl;
 			break;
 		}
+		system("pause");
 		exit(0);
 	}
 	// ソケット作成
@@ -34,6 +35,7 @@ vector<int> CNetwork::convertData(string data) {
 	// データエラー
 	if (data.at(0) == '\0') {
 		cout << "データ変換エラー" << endl;
+		system("pause");
 		exit(0);
 	}
 	vector<int> result;
@@ -54,6 +56,7 @@ string CNetwork::convertData(vector<int>& data) {
 	// データエラー
 	if (data.empty()) {
 		cout << "データ変換エラー" << endl;
+		system("pause");
 		exit(0);
 	}
 	// 数字をひとつひとつ処理(16進数)

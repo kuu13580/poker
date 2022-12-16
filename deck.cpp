@@ -39,6 +39,7 @@ void CDeck::shuffle() {
 Card CDeck::draw() {
 	if (deck_.empty()) {
 		cout << "ERROR : カードドローエラー" << endl;
+		system("pause");
 		exit(0);
 	}
 	num_deck_cards_--;
@@ -51,6 +52,7 @@ Card CDeck::draw() {
 Card CDeck::exchange(Card discard) {
 	if (num_deck_cards_ <= 0) {
 		cout << "ERROR : カード交換できませんでした" << endl;
+		system("pause");
 		exit(0);
 	}
 	burncards_.emplace_back(discard);
