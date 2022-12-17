@@ -29,8 +29,8 @@ string CClient::recvData() {
 		system("pause");
 		exit(0);
 	}
-	cout << "recv : " << buf << endl;
-	cout << endl;
+	/*cout << "recv : " << buf << endl;
+	cout << endl;*/
 	return buf;
 }
 vector<int> CClient::recvConvertedData() {
@@ -45,5 +45,5 @@ void CClient::sendData(string data) {
 		system("pause");
 		exit(0);
 	};
-	cout << "send : " << data << endl;
+	//cout << "send : " << data << endl;
 }

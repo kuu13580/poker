@@ -58,8 +58,10 @@ int main() {
 		cout << "client_noを受信" << endl;
 		// 名前を設定
 		string name;
-		cout << "名前：";
-		cin >> name;
+		do {
+			cout << "名前：";
+			cin >> name;
+		} while (10 < name.length());
 		client.sendData(name);
 		//初期データを受信(ジョーカー数, 初期バンクロール, アンティ, 名前)
 		int num_joker, bankroll, ante;

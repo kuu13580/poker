@@ -13,6 +13,8 @@ protected:
 	int is_fold_;
 	// バイナリでオールイン状態
 	int is_allin_;
+	// 操作できる人数
+	int num_rest_player;
 	// 山札
 	CDeck deck_;
 	// プレイヤー

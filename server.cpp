@@ -31,7 +31,7 @@ void CServer::initServer() {
 		stringstream ss;
 		ss << client_no;
 		send(client_sockets_.at(client_no).socket, ss.str().c_str(), sizeof(ss.str().c_str()), 0);
-		cout << client_no << "の接続確認" << endl;
+		//cout << client_no << "の接続確認" << endl;
 	}
 	cout << "すべてのクライアントの接続完了" << endl;
 }
@@ -52,6 +52,9 @@ vector<string> CServer::recvData() {
 		memset(buf, 0, sizeof(buf));
 		recv(client_sockets_.at(client_no).socket, buf, sizeof(buf), 0);
 		data.at(client_no) = buf;
+		stringstream debug;
+		debug << "  recv from " << client_no << " : " << buf << endl;
+		cout << debug.str();
 	}
 	return data;
 }
@@ -60,13 +63,15 @@ string CServer::recvDataEach(int client_no) {
 	char buf[DATA_MAX_SIZE];
 	memset(buf, 0, sizeof(buf));
 	recv(client_sockets_.at(client_no).socket, buf, sizeof(buf), 0);
-	cout << "recv from " << client_no << " : " << buf << endl;
+	stringstream debug;
+	debug << "  recv from " << client_no << " : " << buf << endl;
+	cout << debug.str();
 	return buf;
 }
 
 void CServer::sendData(string data) {
 	// すべてのクライアントにデータ送信
-	cout << "send：" << data << endl;
+	cout << "  send：" << data << endl;
 #pragma omp parallel for
 	for (int i = 0; i < NUM_PLAYER; i++) {
 		send(client_sockets_.at(i).socket, data.c_str(), data.length(), 0);
@@ -74,6 +79,8 @@ void CServer::sendData(string data) {
 }
 
 void CServer::sendDataEach(string data, int client_no) {
+	stringstream debug;
+	debug << "  send to " << client_no << " : " << data << endl;
+	cout << debug.str();
 	send(client_sockets_.at(client_no).socket, data.c_str(), data.length(), 0);
-	cout << "send to " << client_no << " : " << data << endl;
 }

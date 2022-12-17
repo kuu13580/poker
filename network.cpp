@@ -50,11 +50,11 @@ vector<int> CNetwork::convertData(string data) {
 		}
 		result.emplace_back(strtol(buf, NULL, 16));
 	}
-	cout << "recv : ";
+	/*cout << "recv : ";
 	for (int i : result) {
 		cout << i << " ";
 	}
-	cout << endl;
+	cout << endl;*/
 	return result;
 }
 string CNetwork::convertData(vector<int>& data) {
@@ -65,10 +65,10 @@ string CNetwork::convertData(vector<int>& data) {
 		exit(0);
 	}
 	// ”š‚ğ‚Ğ‚Æ‚Â‚Ğ‚Æ‚Âˆ—(16i”)
-	cout << "send : ";
+	//cout << "send : ";
 	string output;
 	for (int i : data) {
-		cout << i << " ";
+		/*cout << i << " ";*/
 		stringstream ss;
 		if (i == -1) {
 			ss << "ff";

@@ -24,7 +24,7 @@ using namespace std;
 extern string marks[];
 extern string numbers[];
 extern string hands[];
-#define NUM_PLAYER 1
+#define NUM_PLAYER 2
 #define NUM_STD_CARDS 52
 #define NUM_HANDCARDS 5
 #define DATA_MAX_SIZE 500

@@ -6,7 +6,7 @@ int CPlayer::num_players_ = 0;
 
 // コンストラクタ
 CPlayer::CPlayer(string name, int bankroll)
-	:name_(name), player_no_(num_players_), bankroll_(bankroll){
+	:name_(name), player_no_(num_players_), bankroll_(bankroll), public_cards(0){
 	// プレイヤーの数増加
 	num_players_++;
 	//vectorの領域確保
