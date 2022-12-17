@@ -13,7 +13,7 @@ void CServer::initServer() {
 	}
 	// ソケットの設定
 	addr.sin_family = AF_INET;
-	addr.sin_port = htons(12345);
+	addr.sin_port = htons(25565);
 	addr.sin_addr.S_un.S_addr = INADDR_ANY;
 	bind(server_socket_, (struct sockaddr*)&addr, sizeof(addr));
 	// 接続

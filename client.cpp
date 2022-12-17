@@ -9,7 +9,7 @@ void CClient::initClient() {
 	client_socket_ = makeSocket();
 	// サーバーソケットの設定
 	server_addr_.sin_family = AF_INET;
-	server_addr_.sin_port = htons(12345);
+	server_addr_.sin_port = htons(25565);
 	char ip[20] = "127.0.0.1";
 	inet_pton(server_addr_.sin_family, ip, &server_addr_.sin_addr.S_un.S_addr);
 	// サーバーに接続
