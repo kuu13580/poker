@@ -93,6 +93,8 @@ typedef enum Command {
 	Reset_PlayersBet,
 	FinishBettingRound,
 	FinishDrawRound,
+	ShowDown,
+	FinishShowDown,
 }Command;
 
 #endif //  _H_COMMON_

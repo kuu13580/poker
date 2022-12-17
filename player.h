@@ -20,7 +20,8 @@ public:
 	void setBankroll(int num) { bankroll_ = num; }
 	void setHand(Card card, int pos) {
 		hand_.resize(NUM_HANDCARDS);
-		hand_.at(pos) = card;
+		hand_.at(pos).number = card.number;
+		hand_.at(pos).suit = card.suit;
 	}
 	// オープンベットの見せ札(5桁の01フラッグ)
 	int public_cards;

@@ -32,9 +32,9 @@ int main() {
 		CServer server;
 		server.initServer();
 		// 各変数の数
-		int num_joker, bankroll, ante;
-		cout << "ジョーカーの数　初期バンクロール　アンティ：";
-		cin >> num_joker >> bankroll >> ante;
+		int num_joker = 2, bankroll = 10000, ante = 100;
+		//cout << "ジョーカーの数　初期バンクロール　アンティ：";
+		//cin >> num_joker >> bankroll >> ante;
 		// 名前の受信
 		vector<string> players_name = server.recvData();
 		// 初期データを送信(ジョーカー数, 初期バンクロール, アンティ, 名前)

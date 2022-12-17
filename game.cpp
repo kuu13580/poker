@@ -29,43 +29,48 @@ void CGameServer::startRound() {
 	cout << "ベッティングラウンド1開始" << endl;
 	bettingRound();
 	cout << "ベッティングラウンド1終了" << endl;
-	cout << "koko" << endl;
-	system("pause");
 	//// ドローラウンド1
-	//drawRound();
+	cout << "ドローラウンド1開始" << endl;
+	drawRound();
+	cout << "ドローラウンド1終了" << endl;
 	//// ベッティングラウンド2
-	//bettingRound();
+	cout << "ベッティングラウンド2開始" << endl;
+	bettingRound();
+	cout << "ベッティングラウンド2終了" << endl;
 	//// ドローラウンド2
-	//drawRound();
-	//is_final_ = true;
+	cout << "ドローラウンド2開始" << endl;
+	drawRound();
+	cout << "ドローラウンド2終了" << endl;
+	is_final_ = true;
 	//// 最終ベット
-	//bettingRound();
+	cout << "最終ベッティングラウンド開始" << endl;
+	bettingRound();
+	cout << "最終ベッティングラウンド終了" << endl;
 	//// ショーダウン
-	//showDown();
+	cout << "ショーダウン" << endl;
+	showDown();
 	//// 親を移す
-	//dealer_btn_++;
-	//startRound();
+	dealer_btn_++;
+	startRound();
 }
 void CGameClient::startRound() {
 	initialize();
 	betAnte();
-	//system("cls");
+	system("cls");
 	// ベッティングラウンド1
 	bettingRound();
-	cout << "koko" << endl;
-	system("pause");
 	//// ドローラウンド1
-	//drawRound();
+	drawRound();
 	//// ベッティングラウンド2
-	//bettingRound();
+	bettingRound();
 	//// ドローラウンド2
-	//drawRound();
-	//is_final_ = true;
+	drawRound();
+	is_final_ = true;
 	//// 最終ベット
-	//bettingRound();
+	bettingRound();
 	//// ショーダウン
-	//showDown();
-	//startRound();
+	showDown();
+	startRound();
 }
 
 // ラウンド前の初期化
@@ -80,14 +85,14 @@ void CGameServer::initialize() {
 	// プレイヤーの初期化
 //#pragma omp parallel for
 	for (int i = 0; i < NUM_PLAYER; i++) {
-		CPlayer player = players_.at(i);
+		CPlayer& player = players_.at(i);
 		player.clearHand();
 		player.public_cards = 0;
 		if (player.bankroll() == 0) continue;
 		player.draw(deck_, NUM_HANDCARDS);
 		player.sortHand();
 		// 初期手札を送信
-		vector<int> send_data = { Set_HandCards };
+		vector<int> send_data = { Set_HandCards , i };
 		for (int j = 0; j < NUM_HANDCARDS; j++) {
 			send_data.emplace_back(network.ctoi(player.getHand().at(j)));
 		}
@@ -108,9 +113,8 @@ void CGameClient::initialize() {
 	players_bet_ = vector<int>(NUM_PLAYER, 0);
 	// 自分のカードを受信して更新
 	vector<int> recv_data = network.recvConvertedData();
-	for (int i = 0; i < NUM_HANDCARDS; i++) {
-		players_.at(network.self_client_no).setHand(network.itoc(recv_data.at(1 + i)), i);
-	}
+	setData(recv_data);
+	players_.at(network.self_client_no).sortHand();
 	// 各種状態の初期化
 	is_final_ = false;
 	is_opened_ = -1;
@@ -123,31 +127,33 @@ void CGameServer::betAnte() {
 	cout << "betAnte開始" << endl;
 	vector<int> send_data;
 	for (int player_no = 0; player_no < NUM_PLAYER; player_no++) {
-		if (players_.at(player_no).bankroll() == 0) {
+		CPlayer& player = players_.at(player_no);
+		if (player.bankroll() == 0) {
 			is_fold_ |= 1 << player_no;
 		}
-		else if (players_.at(player_no).bankroll() < ante_) {
-			allIn(players_.at(player_no));
-			send_data.insert(send_data.end(), {Set_PlayersBet, player_no , players_bet_.at(player_no)});
+		else if (player.bankroll() < ante_) {
+			allIn(player);
+			send_data.insert(send_data.end(), { Set_PlayersBet, player_no , players_bet_.at(player_no) });
 			network.addDivideInt(send_data, players_bet_.at(player_no));
 			is_allin_ |= 1 << player_no;
 		}
 		else {
-			raise(players_.at(player_no), ante_);
+			raise(player, ante_);
 		}
 	}
 	// 処理結果を送信
 	for (int player_no = 0; player_no < NUM_PLAYER; player_no++) {
-		send_data.insert(send_data.end(), { Set_Bankroll ,player_no});
-		network.addDivideInt(send_data, players_.at(player_no).bankroll());
+		send_data.insert(send_data.end(), { Set_PlayersBet ,player_no });
+		network.addDivideInt(send_data, players_bet_.at(player_no));
 	}
-	send_data.insert(send_data.end(), { Set_Fold, is_fold_, Set_Allin, is_allin_, Set_CurrentBet});
+	send_data.insert(send_data.end(), { Set_Fold, is_fold_, Set_Allin, is_allin_, Set_CurrentBet });
 	network.addDivideInt(send_data, ante_);
 	network.sendData(send_data);
 }
 void CGameClient::betAnte() {
 	cout << "betAnte開始" << endl;
-	setData(network.recvConvertedData());
+	vector<int> recv_data = network.recvConvertedData();
+	setData(recv_data);
 }
 
 // ========== ドローラウンド ==========
@@ -159,7 +165,7 @@ void CGameServer::drawRound() {
 		}
 		vector<int> send_data = { Request_ChangeHand };
 		// リクエスト送信
-		network.sendDataEach(network.convertData(send_data), player_no);
+		network.sendDataEach(send_data, player_no);
 		// 手札交換データ受信
 		vector<int> recv_data = network.convertData(network.recvDataEach(player_no));
 		// 手札交換
@@ -169,16 +175,25 @@ void CGameServer::drawRound() {
 		for (int j = 0; j < NUM_HANDCARDS; j++) {
 			send_data.emplace_back(network.ctoi(players_.at(player_no).getHand().at(j)));
 		}
-		network.sendData(send_data);
+		network.sendDataEach(send_data, player_no);
 	}
+	// 終了処理
+	network.recvData();
 }
+
 void CGameClient::drawRound() {
+	// 手札交換リクエスト受信
+	if (network.recvConvertedData().at(0) != Request_ChangeHand) {
+		cout << "ドローラウンド開始エラー" << endl;
+		system("pause");
+		exit(0);
+	}
 	// 画面表示
 	system("cls");
 	cout << "<<< ドローラウンド >>>" << endl << endl;
-	int player_no = network.self_client_no;
-	players_.at(player_no).showHand();
-	dealer::viewHand(players_.at(player_no).getHand());
+	CPlayer& player = players_.at(network.self_client_no);
+	player.showHand();
+	dealer::viewHand(player.getHand());
 	int n = 0;
 	int selected = 0;
 	do {
@@ -194,19 +209,21 @@ void CGameClient::drawRound() {
 		selected |= 1 << buf;
 	}
 	// selectedを送信
-	vector<int> send_data = { Response, player_no, selected };
+	vector<int> send_data = { Response, network.self_client_no, selected };
 	network.sendData(send_data);
 	// 交換後の手札を受信
 	vector<int> recv_data = network.recvConvertedData();
 	for (int i = 0; i < NUM_HANDCARDS; i++) {
-		players_.at(player_no).setHand(network.itoc(recv_data.at(1 + i)), i);
+		player.setHand(network.itoc(recv_data.at(1 + i)), i);
 	}
 	cout << endl << "交換後:";
-	players_.at(player_no).showHand();
-	dealer::viewHand(players_.at(player_no).getHand());
-	cin.get();
+	player.showHand();
+	dealer::viewHand(player.getHand());
+	system("pause");
 	system("cls");
-
+	// ドローラウンド終了リクエスト送信
+	vector<int> request = { FinishDrawRound };
+	network.sendData(request);
 }
 
 // ========== ベッティングラウンド ==========
@@ -233,30 +250,33 @@ void CGameServer::bettingRound() {
 		switch (recv_data.at(2)) {
 		case CheckCall: // コール・チェック
 			if (!call(current_player)) continue;
-			current_player_no = (current_player_no + 1) % NUM_PLAYER;
-			i++;
-			send_data = { Set_PlayersBet, current_player_no};
+			send_data = { Set_PlayersBet, current_player_no };
 			network.addDivideInt(send_data, current_bet_);
 			network.sendData(send_data);
-			break;
-		case Raise: // レイズ(オープン状態で不可)
-			if (0 <= is_opened_) break;
-			if (!raise(current_player, recv_data.at(3))) continue;
 			current_player_no = (current_player_no + 1) % NUM_PLAYER;
-			i = 1;
-			send_data = { Set_PlayersBet, current_player_no};
+			i++;
+			break;
+
+		case Raise: // レイズ(オープン状態で不可)
+			if (0 <= is_opened_) continue;
+			if (!raise(current_player, (recv_data.at(3) << 24) | (recv_data.at(4) << 16) | (recv_data.at(5) << 8) | recv_data.at(6))) continue;
+			send_data = { Set_PlayersBet, current_player_no };
 			network.addDivideInt(send_data, current_bet_);
 			send_data.emplace_back(Set_CurrentBet);
 			network.addDivideInt(send_data, current_bet_);
 			network.sendData(send_data);
+			current_player_no = (current_player_no + 1) % NUM_PLAYER;
+			i = 1;
 			break;
+
 		case Fold: // フォールド
 			is_fold_ |= 1 << current_player_no;
-			i++;
-			current_player_no = (current_player_no + 1) % NUM_PLAYER;
 			send_data = { Set_Fold, is_fold_ };
 			network.sendData(send_data);
+			current_player_no = (current_player_no + 1) % NUM_PLAYER;
+			i++;
 			break;
+
 		case Allin: // オールイン
 			if (!allIn(current_player)) continue;
 			is_allin_ |= 1 << current_player_no;
@@ -266,32 +286,33 @@ void CGameServer::bettingRound() {
 					players_bet_.at(i) = current_bet_;
 				}
 			}
-			i = 1;
-			current_player_no = (current_player_no + 1) % NUM_PLAYER;
-			send_data = { Set_Allin, is_allin_, Set_CurrentBet};
+			send_data = { Set_Allin, is_allin_, Set_CurrentBet };
 			network.addDivideInt(send_data, current_bet_);
 			for (int i = 0; i < NUM_PLAYER; i++) {
 				send_data.insert(send_data.end(), { Set_PlayersBet, i });
 				network.addDivideInt(send_data, players_bet_.at(i));
 			}
 			network.sendData(send_data);
+			current_player_no = (current_player_no + 1) % NUM_PLAYER;
+			i = 1;
 			break;
+
 		case Open: // オープンベット(2倍でベット)
 			if (!is_final_) break;
-			if (!raise(current_player, recv_data.at(3))) continue;
+			if (!raise(current_player, (recv_data.at(3) << 24) | (recv_data.at(4) << 16) | (recv_data.at(5) << 8) | recv_data.at(6))) continue;
 			// 開示する手札
 			current_player.public_cards = recv_data.at(4);
 			current_bet_ = recv_data.at(3) * 2;
 			players_bet_.at(current_player_no) = current_bet_;
 			is_opened_ = current_player_no;
-			i = 1;
-			current_player_no = (current_player_no + 1) % NUM_PLAYER;
-			send_data = { Set_Opened, is_opened_, current_player.public_cards};
+			send_data = { Set_Opened, is_opened_, current_player.public_cards };
 			send_data.emplace_back(Set_CurrentBet);
 			network.addDivideInt(send_data, current_bet_);
 			send_data.emplace_back(Set_PlayersBet);
 			send_data.emplace_back(current_player_no);
 			network.addDivideInt(send_data, current_bet_);
+			current_player_no = (current_player_no + 1) % NUM_PLAYER;
+			i = 1;
 			break;
 		}
 	}
@@ -300,18 +321,18 @@ void CGameServer::bettingRound() {
 	// オープンベットのベットを半額に減らす
 	if (is_opened_ >= 0) {
 		players_bet_.at(is_opened_) /= 2;
-		send_data.insert(send_data.end(), { Set_PlayersBet, is_opened_});
+		send_data.insert(send_data.end(), { Set_PlayersBet, is_opened_ });
 		network.addDivideInt(send_data, players_bet_.at(is_opened_));
 	}
 	// プレイヤーのバンクロールを処理
-	send_data.emplace_back(Set_Bankroll);
 	for (int player_no = 0; player_no < NUM_PLAYER; player_no++) {
+		send_data.emplace_back(Set_Bankroll);
 		players_.at(player_no).payout(players_bet_.at(player_no));
 		send_data.emplace_back(player_no);
 		network.addDivideInt(send_data, players_.at(player_no).bankroll());
 	}
 	total_pot_ += accumulate(players_bet_.begin(), players_bet_.end(), 0);
-	send_data.insert(send_data.end(), { Set_TotalPot, total_pot_ });
+	send_data.emplace_back(Set_TotalPot);
 	network.addDivideInt(send_data, total_pot_);
 	//ベットを初期化
 	for (int i = 0; i < players_bet_.size(); i++) {
@@ -322,6 +343,7 @@ void CGameServer::bettingRound() {
 	send_data.insert(send_data.end(), { Set_CurrentBet, 0, 0, 0, 0 });
 	network.sendData(send_data);
 }
+
 void CGameClient::bettingRound() {
 	cout << "bettingRound開始" << endl;
 	// ラウンド中はループ(終了信号受領でbreak)
@@ -334,7 +356,10 @@ void CGameClient::bettingRound() {
 			continue;
 		}
 		// 受信データが終了クエリ
-		if (data.at(0) == FinishBettingRound) break;
+		if (data.at(0) == FinishBettingRound) {
+			setData(data);
+			break;
+		}
 		// 以下受信データがリクエストクエリ
 		if (data.at(0) != Request_Action) {
 			cout << "Betting Round Data Format ERROR" << endl;
@@ -343,14 +368,14 @@ void CGameClient::bettingRound() {
 		}
 		int current_player_no = data.at(1);
 		CPlayer& current_player = players_.at(current_player_no);
-		//system("cls");
+		system("cls");
 		cout << "<<< ベッティングラウンド >>>" << endl;
 		cout << "ポット総額    " << total_pot_ + accumulate(players_bet_.begin(), players_bet_.end(), 0) << endl;
 		cout << "現在のベット額：" << current_bet_ << endl << endl;
 		cout << "＜各プレイヤーの情報＞" << endl;
 		cout << right;
 		for (int player_no = 0; player_no < NUM_PLAYER; player_no++) {
-			cout << (player_no == current_player_no ? "●" : " ") << players_.at(player_no).name() << "   残金：" << setw(6) << players_.at(player_no).bankroll() << "   ベット：" << setw(6) << players_bet_.at(player_no);
+			cout << (player_no == current_player_no ? "●" : " ") << left << setw(10) << players_.at(player_no).name() << "   残金：" << right << setw(6) << players_.at(player_no).bankroll() << "   ベット：" << setw(6) << players_bet_.at(player_no);
 			if (is_fold_ & (1 << player_no)) cout << "   fold  ";
 			if (is_allin_ & (1 << player_no)) cout << "   allin  ";
 			if (players_.at(player_no).public_cards != 0) {
@@ -392,6 +417,7 @@ void CGameClient::bettingRound() {
 				network.sendData(data);
 				is_send = true;
 				break;
+
 			case Raise: // レイズ(オープン状態で不可)
 				if (0 <= is_opened_) break;
 				cout << "ベット額 : ";
@@ -399,16 +425,18 @@ void CGameClient::bettingRound() {
 				if (current_player.bankroll() < new_bet || new_bet < current_bet_) continue;
 				// データ送信(レスポンス)
 				data.emplace_back(Raise);
-				data.emplace_back(new_bet);
+				network.addDivideInt(data, new_bet);
 				network.sendData(data);
 				is_send = true;
 				break;
+
 			case Fold: // フォールド
 				// データ送信(レスポンス)
 				data.emplace_back(Fold);
 				network.sendData(data);
 				is_send = true;
 				break;
+
 			case Allin: // オールイン
 				if (current_player.bankroll() <= 0) {
 					system("pause");
@@ -419,6 +447,7 @@ void CGameClient::bettingRound() {
 				network.sendData(data);
 				is_send = true;
 				break;
+
 			case Open: // オープンベット(2倍でベット)
 				if (!is_final_) break;
 				// 開示する手札
@@ -440,7 +469,7 @@ void CGameClient::bettingRound() {
 				} while (current_player.bankroll() < new_bet || new_bet * 2 < current_bet_);
 				// データ送信(レスポンス)
 				data.emplace_back(Open);
-				data.emplace_back(new_bet);
+				network.addDivideInt(data, new_bet);
 				data.emplace_back((1 << selected[0]) | (1 << selected[1]) | (1 << selected[3]));
 				network.sendData(data);
 				is_send = true;
@@ -451,7 +480,6 @@ void CGameClient::bettingRound() {
 }
 
 // ========== ショーダウン ==========
-// TODO:未変更
 void CGameServer::showDown() {
 	// プレイヤーの強さの配列取得
 	vector<vector<int>> players_power(NUM_PLAYER, { -1 });
@@ -461,21 +489,20 @@ void CGameServer::showDown() {
 	}
 
 	// 勝者を決定
-	vector<int> winner = { 0 };
+	int winners = 0;
+	int winner = 0;
 	for (int player_no = 1; player_no < NUM_PLAYER; player_no++) {
 		vector<int> player_power = players_power.at(player_no);
-		vector<int> winner_power = players_power.at(winner.at(0));
+		vector<int> winner_power = players_power.at(winner);
 		if (winner_power.front() < player_power.front()) { // 役がより強い
-			winner.clear();
-			winner.emplace_back(player_no);
+			winners = 1 << player_no;
 		}
 		else if (winner_power.front() == player_power.front()) { // 役が一緒
 			bool chop = true;
 			for (int i = 0; i < winner_power.size(); i++) {
 				if (winner_power.at(i) < player_power.at(i)) {
 					chop = false;
-					winner.clear();
-					winner.emplace_back(player_no);
+					winners = 1 << player_no;
 					break;
 				}
 				else if (winner_power.at(i) > player_power.at(i)) {
@@ -484,31 +511,81 @@ void CGameServer::showDown() {
 				}
 			}
 			if (chop) { // チョップ　引き分け
-				winner.emplace_back(player_no);
+				winners |= 1 << player_no;
 			}
 		}
 	}
 
 	// 賞金の計算
-	int prize = total_pot_ / (int)winner.size();
-	for (int i : winner) {
-		players_.at(i).payout(-prize);
+	unsigned count = (winners & 0x55555555) + ((winners >> 1) & 0x55555555);
+	count = (count & 0x33333333) + ((count >> 2) & 0x33333333);
+	count = (count & 0x0f0f0f0f) + ((count >> 4) & 0x0f0f0f0f);
+	count = (count & 0x00ff00ff) + ((count >> 8) & 0x00ff00ff);
+	count = (count & 0x0000ffff) + ((count >> 16) & 0x0000ffff);
+	int prize = total_pot_ / count;
+	for (int i = 0; i < NUM_PLAYER; i++) {
+		if (winners & (1 << i)) players_.at(i).payout(-prize);
 	}
+
+	// 送信
+	vector<int> send_data;
+	for (int player_no = 0; player_no < NUM_PLAYER; player_no++) {
+		send_data.emplace_back(Set_HandCards);
+		send_data.emplace_back(player_no);
+		for (int j = 0; j < NUM_HANDCARDS; j++) {
+			send_data.emplace_back(network.ctoi(players_.at(player_no).getHand().at(j)));
+		}
+	}
+	for (int player_no = 0; player_no < NUM_PLAYER; player_no++) {
+		send_data.emplace_back(Set_Bankroll);
+		send_data.emplace_back(player_no);
+		network.addDivideInt(send_data, players_.at(player_no).bankroll());
+	}
+	network.sendData(send_data);
+	network.recvData();
+	send_data = { ShowDown };
+	// players_powerは0xf0で区切る
+	send_data.emplace_back(winners);
+	for (int player_no = 0; player_no < NUM_PLAYER; player_no++) {
+		send_data.insert(send_data.end(), players_power.at(player_no).begin(), players_power.at(player_no).end());
+		send_data.emplace_back(0xf0);
+	}
+	network.sendData(send_data);
+
+	// 終了受信
+	network.recvData();
 }
 
 void CGameClient::showDown() {
-	vector<int> winner;
-	vector<vector<int>> players_power;
 	// 結果の受信
+	setData(network.recvConvertedData());
+	network.sendData({ Success });
+	vector<int> recv_data = network.recvConvertedData();
+	if (recv_data.at(0) != ShowDown) {
+		cout << "ショーダウンデータ受信エラー" << endl;
+		system("pause");
+		exit(0);
+	}
+	int winners = recv_data.at(1);
+	vector<vector<int>> players_power;
+	vector<int> v;
+	for (int i = 2, length = recv_data.size(); i < length; i++) {
+		if (recv_data.at(i) == 0xf0) {
+			players_power.insert(players_power.end(), v.begin(), v.end());
+			v.clear();
+			continue;
+		}
+		v.emplace_back(recv_data.at(i));
+	}
 	system("cls");
 	cout << "<<< 終了 >>>" << endl;
 	cout << "ポット合計： " << total_pot_ << endl << endl;
 	for (int player_no = 0; player_no < NUM_PLAYER; player_no++) {
-		CPlayer player = players_.at(player_no);
+		CPlayer& player = players_.at(player_no);
 		if ((is_fold_ & (1 << player_no)) != 0) { // フォールド
 			cout << "fold ";
 		}
-		else if (find(winner.begin(), winner.end(), player_no) != winner.end()) { //勝利
+		else if (winners & (1 << player_no)) { //勝利
 			cout << " win ";
 		}
 		else {
@@ -520,8 +597,10 @@ void CGameClient::showDown() {
 		player.showHand();
 		cout << "役： " << hands[players_power.at(player_no).front()] << endl << endl;
 	}
-	int wait = cin.get();
-	wait = cin.get();
+	system("pause");
+	// ショーダウン終了リクエスト送信
+	vector<int> request = { FinishShowDown };
+	network.sendData(request);
 }
 
 // チェック・コール
@@ -590,6 +669,16 @@ void CGameClient::setData(vector<int> query) {
 			total_pot_ = (query.at(i + 1) << 24) | (query.at(i + 2) << 16) | (query.at(i + 3) << 8) | query.at(i + 4);
 			i += 5;
 			break;
+		case Reset_PlayersBet:
+			for (int j = 0; j < players_bet_.size(); j++) {
+				players_bet_.at(j) = 0;
+			}
+			i += 1;
+			break;
+		case Set_HandCards:
+			for (int j = 0; j < NUM_HANDCARDS; j++) {
+				players_.at(query.at(i + 1)).setHand(network.itoc(query.at(i + 2 + j)), j);
+			}
 		default:
 			i++;
 			break;

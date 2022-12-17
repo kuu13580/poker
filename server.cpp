@@ -56,6 +56,14 @@ vector<string> CServer::recvData() {
 	return data;
 }
 
+string CServer::recvDataEach(int client_no) {
+	char buf[DATA_MAX_SIZE];
+	memset(buf, 0, sizeof(buf));
+	recv(client_sockets_.at(client_no).socket, buf, sizeof(buf), 0);
+	cout << "recv from " << client_no << " : " << buf << endl;
+	return buf;
+}
+
 void CServer::sendData(string data) {
 	// すべてのクライアントにデータ送信
 	cout << "send：" << data << endl;
@@ -68,12 +76,4 @@ void CServer::sendData(string data) {
 void CServer::sendDataEach(string data, int client_no) {
 	send(client_sockets_.at(client_no).socket, data.c_str(), data.length(), 0);
 	cout << "send to " << client_no << " : " << data << endl;
-}
-
-string CServer::recvDataEach(int client_no) {
-	char buf[DATA_MAX_SIZE];
-	memset(buf, 0, sizeof(buf));
-	recv(client_sockets_.at(client_no).socket, buf, sizeof(buf), 0);
-	cout << "recv from " << client_no << " : " << buf << endl;
-	return buf;
 }

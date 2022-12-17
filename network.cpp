@@ -50,6 +50,11 @@ vector<int> CNetwork::convertData(string data) {
 		}
 		result.emplace_back(strtol(buf, NULL, 16));
 	}
+	cout << "recv : ";
+	for (int i : result) {
+		cout << i << " ";
+	}
+	cout << endl;
 	return result;
 }
 string CNetwork::convertData(vector<int>& data) {
