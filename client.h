@@ -1,7 +1,7 @@
 #ifndef _H_CLIENT_
 #define _H_CLIENT_
 
-class CClient : public CNetwork{
+class CClient : public CNetwork {
 private:
 	WSADATA wsa_data_;
 	struct sockaddr_in server_addr_;
@@ -19,6 +19,10 @@ public:
 	// ‘—M
 	void sendData(string data);
 	void sendData(vector<int>& v) { sendData(convertData(v)); }
+	void sendData(int x) {
+		vector<int> v = { x };
+		sendData(v);
+	}
 };
 
 #endif // _H_CLIENT_

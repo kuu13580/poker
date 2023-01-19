@@ -24,7 +24,6 @@ string hands[] = {
 
 int main() {
 	int n;
-	cout << Success << endl;
 	cout << "サーバー起動(0)　クライアント起動(1)：";
 	cin >> n;
 	system("cls");

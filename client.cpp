@@ -57,5 +57,5 @@ void CClient::sendData(string data) {
 		system("pause");
 		exit(0);
 	};
-	cout << "send : " << data << endl;
+	//cout << "send : " << data << endl;
 }

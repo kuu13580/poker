@@ -116,7 +116,7 @@ void CGameClient::initialize() {
 	vector<int> recv_data = network.recvConvertedData();
 	setData(recv_data);
 	players_.at(network.self_client_no).sortHand();
-	network.sendData({ Success });
+	network.sendData(Success);
 	// 各種状態の初期化
 	is_final_ = false;
 	is_opened_ = -1;
@@ -157,76 +157,7 @@ void CGameClient::betAnte() {
 	cout << "betAnte開始" << endl;
 	vector<int> recv_data = network.recvConvertedData();
 	setData(recv_data);
-	network.sendData({ Success });
-}
-
-// ========== ドローラウンド ==========
-void CGameServer::drawRound() {
-#pragma omp parallel for
-	for (int player_no = 0; player_no < NUM_PLAYER; player_no++) {
-		if ((is_fold_ & (1 << player_no)) != 0) { // フォールドしていたら飛ばす
-			continue;
-		}
-		vector<int> send_data = { Request_ChangeHand };
-		// リクエスト送信
-		network.sendDataEach(send_data, player_no);
-		// 手札交換データ受信
-		vector<int> recv_data = network.convertData(network.recvDataEach(player_no));
-		// 手札交換
-		players_.at(player_no).exchangeHand(recv_data.at(2), deck_);
-		// 交換後の手札送信
-		send_data = { Set_HandCards };
-		for (int j = 0; j < NUM_HANDCARDS; j++) {
-			send_data.emplace_back(network.ctoi(players_.at(player_no).getHand().at(j)));
-		}
-		network.sendDataEach(send_data, player_no);
-	}
-	// 終了処理
-	network.recvData();
-}
-
-void CGameClient::drawRound() {
-	// 手札交換リクエスト受信
-	if (network.recvConvertedData().at(0) != Request_ChangeHand) {
-		cout << "ドローラウンド開始エラー" << endl;
-		system("pause");
-		exit(0);
-	}
-	// 画面表示
-	system("cls");
-	cout << "<<< ドローラウンド >>>" << endl << endl;
-	CPlayer& player = players_.at(network.self_client_no);
-	player.showHand();
-	dealer::viewHand(player.getHand());
-	int n = 0;
-	int selected = 0;
-	do {
-		cout << "交換する手札の数 : ";
-		cin >> n;
-	} while (n < 0 || NUM_HANDCARDS < n);
-	int buf = 0;
-	for (int j = 0; j < n; j++) {
-		do {
-			cout << j + 1 << "つ目の交換手札 : ";
-			cin >> buf;
-		} while (buf < 1 || NUM_HANDCARDS < buf || (selected & (1 << buf)));
-		selected |= 1 << (buf - 1);
-	}
-	// selectedを送信
-	vector<int> send_data = { Response, network.self_client_no, selected };
-	network.sendData(send_data);
-	// 交換後の手札を受信
-	vector<int> recv_data = network.recvConvertedData();
-	for (int i = 0; i < NUM_HANDCARDS; i++) {
-		player.setHand(network.itoc(recv_data.at(1 + i)), i);
-	}
-	cout << endl << "交換後:";
-	player.showHand();
-	dealer::viewHand(player.getHand());
-	system("pause");
-	system("cls");
-	// ドローラウンド終了リクエスト送信
-	network.sendData({ FinishDrawRound });
+	network.sendData( Success );
 }
 
 // ========== ベッティングラウンド ==========
@@ -366,7 +297,7 @@ void CGameClient::bettingRound() {
 		// 受信データが終了クエリ
 		if (data.at(0) == FinishBettingRound) {
 			setData(data);
-			network.sendData({ Success });
+			network.sendData( Success );
 			break;
 		}
 		// 以下受信データがリクエストクエリ
@@ -403,7 +334,7 @@ void CGameClient::bettingRound() {
 		// 以下自分のターン
 		// 選択したアクションが内部データにおいて妥当であればデータ送信
 		if (current_player_no != network.self_client_no) {
-			network.sendData({ Wait });
+			network.sendData( Wait );
 			continue;
 		}
 		cout << "手札：";
@@ -491,6 +422,75 @@ void CGameClient::bettingRound() {
 	}
 }
 
+// ========== ドローラウンド ==========
+void CGameServer::drawRound() {
+#pragma omp parallel for
+	for (int player_no = 0; player_no < NUM_PLAYER; player_no++) {
+		if ((is_fold_ & (1 << player_no)) != 0) { // フォールドしていたら飛ばす
+			continue;
+		}
+		vector<int> send_data = { Request_ChangeHand };
+		// リクエスト送信
+		network.sendDataEach(send_data, player_no);
+		// 手札交換データ受信
+		vector<int> recv_data = network.convertData(network.recvDataEach(player_no));
+		// 手札交換
+		players_.at(player_no).exchangeHand(recv_data.at(2), deck_);
+		// 交換後の手札送信
+		send_data = { Set_HandCards };
+		for (int j = 0; j < NUM_HANDCARDS; j++) {
+			send_data.emplace_back(network.ctoi(players_.at(player_no).getHand().at(j)));
+		}
+		network.sendDataEach(send_data, player_no);
+	}
+	// 終了処理
+	network.recvData();
+}
+
+void CGameClient::drawRound() {
+	// 手札交換リクエスト受信
+	if (network.recvConvertedData().at(0) != Request_ChangeHand) {
+		cout << "ドローラウンド開始エラー" << endl;
+		system("pause");
+		exit(0);
+	}
+	// 画面表示
+	system("cls");
+	cout << "<<< ドローラウンド >>>" << endl << endl;
+	CPlayer& player = players_.at(network.self_client_no);
+	player.showHand();
+	dealer::viewHand(player.getHand());
+	int n = 0;
+	int selected = 0;
+	do {
+		cout << "交換する手札の数 : ";
+		cin >> n;
+	} while (n < 0 || NUM_HANDCARDS < n);
+	int buf = 0;
+	for (int j = 0; j < n; j++) {
+		do {
+			cout << j + 1 << "つ目の交換手札 : ";
+			cin >> buf;
+		} while (buf < 1 || NUM_HANDCARDS < buf || (selected & (1 << buf)));
+		selected |= 1 << (buf - 1);
+	}
+	// selectedを送信
+	vector<int> send_data = { Response, network.self_client_no, selected };
+	network.sendData(send_data);
+	// 交換後の手札を受信
+	vector<int> recv_data = network.recvConvertedData();
+	for (int i = 0; i < NUM_HANDCARDS; i++) {
+		player.setHand(network.itoc(recv_data.at(1 + i)), i);
+	}
+	cout << endl << "交換後:";
+	player.showHand();
+	dealer::viewHand(player.getHand());
+	system("pause");
+	system("cls");
+	// ドローラウンド終了リクエスト送信
+	network.sendData(FinishDrawRound);
+}
+
 // ========== ショーダウン ==========
 void CGameServer::showDown() {
 	// プレイヤーの強さの配列取得
@@ -571,7 +571,7 @@ void CGameServer::showDown() {
 void CGameClient::showDown() {
 	// 結果の受信
 	setData(network.recvConvertedData());
-	network.sendData({ Success });
+	network.sendData( Success );
 	vector<int> recv_data = network.recvConvertedData();
 	if (recv_data.at(0) != ShowDown) {
 		cout << "ショーダウンデータ受信エラー" << endl;

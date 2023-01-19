@@ -12,5 +12,8 @@ public:
 	void addDivideInt(vector<int>& v, int number);
 };
 
+namespace utility {
+	vector<int> genVec(int x);
+}
 
 #endif
