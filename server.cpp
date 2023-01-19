@@ -3,7 +3,6 @@
 #include "server.h"
 
 void CServer::initServer() {
-
 	// ソケット作成
 	server_socket_ = makeSocket();
 	struct sockaddr_in addr;

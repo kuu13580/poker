@@ -10,7 +10,7 @@ public:
 	// 自分のclient_no
 	int self_client_no;
 	// コンストラクタ
-	void initClient();
+	void initClient(char* hostname);
 	// デストラクタ
 	~CClient();
 	// 受信

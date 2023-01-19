@@ -24,17 +24,18 @@ string hands[] = {
 
 int main() {
 	int n;
+	cout << Success << endl;
 	cout << "サーバー起動(0)　クライアント起動(1)：";
 	cin >> n;
 	system("cls");
 	if (n == 0) {
 		cout << "サーバー起動" << endl;
-		CServer server;
-		server.initServer();
 		// 各変数の数
 		int num_joker = 2, bankroll = 10000, ante = 100;
-		//cout << "ジョーカーの数　初期バンクロール　アンティ：";
-		//cin >> num_joker >> bankroll >> ante;
+		cout << "ジョーカーの数　初期バンクロール　アンティ：";
+		cin >> num_joker >> bankroll >> ante;
+		CServer server;
+		server.initServer();
 		// 名前の受信
 		vector<string> players_name = server.recvData();
 		// 初期データを送信(ジョーカー数, 初期バンクロール, アンティ, 名前)
@@ -51,8 +52,13 @@ int main() {
 	}
 	else if (n == 1) {
 		cout << "クライアント起動" << endl;
+		char hostname[256];
+		memset(hostname, 0, sizeof(hostname));
+		cout << "接続先のホスト名 : ";
+		cin >> hostname;
+		// 接続先
 		CClient client;
-		client.initClient();
+		client.initClient(hostname);
 		// クライアントナンバーを受信
 		client.self_client_no = atoi(client.recvData().c_str());
 		cout << "client_noを受信" << endl;

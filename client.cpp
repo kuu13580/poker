@@ -1,16 +1,28 @@
 #include "common.h"
 #include "network.h"
 #include "client.h"
-#define _WINSOCK_DEPRECATED_NO_WARNINGS
 
-void CClient::initClient() {
+void CClient::initClient(char* hostname) {
 	self_client_no = 0;
 	// ソケット作成
 	client_socket_ = makeSocket();
 	// サーバーソケットの設定
+	struct addrinfo hints, * res;
+	struct in_addr addr;
+	int error;
+	memset(&hints, 0, sizeof(hints));
+	hints.ai_socktype = SOCK_STREAM;
+	hints.ai_family = AF_INET;
+	if ((error = getaddrinfo(hostname, NULL, &hints, &res)) != 0) {
+		cout << "ERROR: ホスト名解決できませんでした" << endl;
+		system("pause");
+		exit(0);
+	}
+	addr.S_un = ((struct sockaddr_in*)(res->ai_addr))->sin_addr.S_un;
+	char ip[20];
+	inet_ntop(AF_INET, &addr, ip, sizeof(ip));
 	server_addr_.sin_family = AF_INET;
 	server_addr_.sin_port = htons(25565);
-	char ip[20] = "127.0.0.1";
 	inet_pton(server_addr_.sin_family, ip, &server_addr_.sin_addr.S_un.S_addr);
 	// サーバーに接続
 	connect(client_socket_, (struct sockaddr*)&server_addr_, sizeof(server_addr_));
@@ -45,5 +57,5 @@ void CClient::sendData(string data) {
 		system("pause");
 		exit(0);
 	};
-	//cout << "send : " << data << endl;
+	cout << "send : " << data << endl;
 }
