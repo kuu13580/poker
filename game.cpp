@@ -315,7 +315,7 @@ void CGameClient::bettingRound() {
 		cout << "＜各プレイヤーの情報＞" << endl;
 		cout << right;
 		for (int player_no = 0; player_no < NUM_PLAYER; player_no++) {
-			cout << (player_no == current_player_no ? "●" : " ") << left << setw(12) << players_.at(player_no).name() << "   残金：" << right << setw(6) << players_.at(player_no).bankroll() << "   ベット：" << setw(6) << players_bet_.at(player_no);
+			cout << (player_no == current_player_no ? "● " : "○ ") << left << setw(12) << players_.at(player_no).name() << "   残金：" << right << setw(6) << players_.at(player_no).bankroll() << "   ベット：" << setw(6) << players_bet_.at(player_no);
 			if (is_fold_ & (1 << player_no)) cout << "   fold  ";
 			if (is_allin_ & (1 << player_no)) cout << "   allin  ";
 			if (players_.at(player_no).public_cards != 0) {
