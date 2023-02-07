@@ -83,7 +83,7 @@ void CGameServer::initialize() {
 	previous_bet_ = 0;
 	players_bet_ = vector<int>(NUM_PLAYER, 0);
 	// プレイヤーの初期化
-//#pragma omp parallel for
+#pragma omp parallel for
 	for (int i = 0; i < NUM_PLAYER; i++) {
 		CPlayer& player = players_.at(i);
 		player.clearHand();
@@ -98,13 +98,13 @@ void CGameServer::initialize() {
 		}
 		network.sendDataEach(network.convertData(send_data), i);
 	}
-	network.recvData();
 	cout << "初期手札送信済み" << endl;
 	// 各種状態の初期化
 	is_final_ = false;
 	is_opened_ = -1;
 	is_fold_ = 0b0;
 	is_allin_ = 0b0;
+	network.recvData();
 }
 void CGameClient::initialize() {
 	cout << "initialize開始" << endl;
@@ -116,12 +116,12 @@ void CGameClient::initialize() {
 	vector<int> recv_data = network.recvConvertedData();
 	setData(recv_data);
 	players_.at(network.self_client_no).sortHand();
-	network.sendData(Success);
 	// 各種状態の初期化
 	is_final_ = false;
 	is_opened_ = -1;
 	is_fold_ = 0b0;
 	is_allin_ = 0b0;
+	network.sendData(Success);
 }
 
 // アンティ処理
@@ -237,11 +237,12 @@ void CGameServer::bettingRound() {
 
 		case Open: // オープンベット(2倍でベット)
 			if (!is_final_) break;
-			if (!raise(current_player, (recv_data.at(3) << 24) | (recv_data.at(4) << 16) | (recv_data.at(5) << 8) | recv_data.at(6))) continue;
+			int new_bet = (recv_data.at(3) << 24) | (recv_data.at(4) << 16) | (recv_data.at(5) << 8) | recv_data.at(6);
+			if (!raise(current_player, new_bet)) continue;
 			// 開示する手札
 			cout << "オープン別途された" << endl;
-			current_player.public_cards = recv_data.at(4);
-			current_bet_ = recv_data.at(3) * 2;
+			current_player.public_cards = recv_data.at(7);
+			current_bet_ = new_bet * 2;
 			players_bet_.at(current_player_no) = current_bet_;
 			is_opened_ = current_player_no;
 			send_data = { Set_Opened, is_opened_, current_player.public_cards };
@@ -689,6 +690,8 @@ void CGameClient::setData(vector<int> query) {
 			for (int j = 0; j < NUM_HANDCARDS; j++) {
 				players_.at(query.at(i + 1)).setHand(network.itoc(query.at(i + 2 + j)), j);
 			}
+			i += 2 + NUM_HANDCARDS;
+			break;
 		default:
 			i++;
 			break;
