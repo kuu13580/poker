@@ -94,6 +94,16 @@ vector<int> dealer::isFlush(vector<Card>& hand, vector<int> hand_numbers, int nu
 //ストレートチェック
 // FALSE:-1を返す
 vector<int> dealer::isStraight(vector<int> hand_numbers, int num_jokers) {
+	// 比較成功回数を調べる
+	int count = 0;
+	for (int i = 0; i < NUM_HANDCARDS; i++) {
+		for (int j = 0; j < i; j++) {
+			if (hand_numbers.at(i) == hand_numbers.at(j) && hand_numbers.at(i) != 0) {
+				count++;
+			}
+		}
+	}
+
 	int max = hand_numbers.front();
 	int min = 0;
 	for (auto itr = hand_numbers.end() - 1; itr != hand_numbers.begin(); itr--) {
@@ -104,7 +114,7 @@ vector<int> dealer::isStraight(vector<int> hand_numbers, int num_jokers) {
 	}
 	// カードの数の振れ幅
 	int difference = max - min;
-	if (difference <= 4) { //ストレート確定
+	if (difference <= 4 && count == 0) { //ストレート確定
 		int hicard = hand_numbers.front() + (4 - difference);
 		if (hicard > 14) {
 			hicard = 14;

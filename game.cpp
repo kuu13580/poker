@@ -515,7 +515,12 @@ void CGameServer::showDown() {
 		vector<int> v = dealer::checkHand(players_.at(player_no).getHand());
 		players_power.at(player_no).insert(players_power.at(player_no).begin(), v.begin(), v.end());
 	}
-
+	for (int i = 0; i < players_power.size(); i++) {
+		for (int j = 0; j < players_power.at(i).size(); j++) {
+			cout << players_power.at(i).at(j) << " ";
+		}
+	}
+	cout << endl;
 	// ŸŽÒ‚ðŒˆ’è
 	int winners = 0;
 	int winner = 0;
@@ -603,7 +608,9 @@ void CGameClient::showDown() {
 			v.clear();
 			continue;
 		}
-		v.emplace_back(recv_data.at(i));
+		else {
+			v.emplace_back(recv_data.at(i));
+		}
 	}
 	system("cls");
 	cout << "<<< I—¹ >>>" << endl;
