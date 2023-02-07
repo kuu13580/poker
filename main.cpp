@@ -33,6 +33,7 @@ int main() {
 		int num_joker = 2, bankroll = 10000, ante = 100;
 		cout << "ジョーカーの数　初期バンクロール　アンティ：";
 		cin >> num_joker >> bankroll >> ante;
+		cout << "クライアント接続待ち..." << endl;
 		CServer server;
 		server.initServer();
 		// 名前の受信

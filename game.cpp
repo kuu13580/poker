@@ -28,24 +28,24 @@ void CGameServer::startRound() {
 	// ベッティングラウンド1
 	cout << "ベッティングラウンド1開始" << endl;
 	bettingRound();
-	cout << "ベッティングラウンド1終了" << endl;
+	cout << "ベッティングラウンド1終了" << endl << endl;
 	//// ドローラウンド1
 	cout << "ドローラウンド1開始" << endl;
 	drawRound();
-	cout << "ドローラウンド1終了" << endl;
+	cout << "ドローラウンド1終了" << endl << endl;
 	//// ベッティングラウンド2
 	cout << "ベッティングラウンド2開始" << endl;
 	bettingRound();
-	cout << "ベッティングラウンド2終了" << endl;
+	cout << "ベッティングラウンド2終了" << endl << endl;
 	//// ドローラウンド2
 	cout << "ドローラウンド2開始" << endl;
 	drawRound();
-	cout << "ドローラウンド2終了" << endl;
+	cout << "ドローラウンド2終了" << endl << endl;
 	is_final_ = true;
 	//// 最終ベット
 	cout << "最終ベッティングラウンド開始" << endl;
 	bettingRound();
-	cout << "最終ベッティングラウンド終了" << endl;
+	cout << "最終ベッティングラウンド終了" << endl << endl;
 	//// ショーダウン
 	cout << "ショーダウン" << endl;
 	showDown();
@@ -239,6 +239,7 @@ void CGameServer::bettingRound() {
 			if (!is_final_) break;
 			if (!raise(current_player, (recv_data.at(3) << 24) | (recv_data.at(4) << 16) | (recv_data.at(5) << 8) | recv_data.at(6))) continue;
 			// 開示する手札
+			cout << "オープン別途された" << endl;
 			current_player.public_cards = recv_data.at(4);
 			current_bet_ = recv_data.at(3) * 2;
 			players_bet_.at(current_player_no) = current_bet_;
@@ -394,18 +395,15 @@ void CGameClient::bettingRound() {
 			case Open: // オープンベット(2倍でベット)
 				if (!is_final_) break;
 				// 開示する手札
-				cout << "開示する手札を3枚選んでください：";
-				vector<int> selected(3);
-				auto range_check = [](vector<int> v) {
-					bool result = true;
-					for (int i : v) {
-						if (i < 0 || 4 < i) result = false;
-					}
-					return result;
-				};
-				do {
-					cin >> selected[0] >> selected[1] >> selected[2];
-				} while (range_check(selected));
+				int selected = 0;
+				int buf = 0;
+				for (int j = 0; j < 3; j++) {
+					do {
+						cout << j + 1 << "つ目の公開手札 : ";
+						cin >> buf;
+					} while (buf < 1 || NUM_HANDCARDS < buf || (selected & (1 << buf)));
+					selected |= 1 << (buf - 1);
+				}
 				do {
 					cout << "ベット額 : ";
 					cin >> new_bet;
@@ -413,7 +411,7 @@ void CGameClient::bettingRound() {
 				// データ送信(レスポンス)
 				data.emplace_back(Open);
 				network.addDivideInt(data, new_bet);
-				data.emplace_back((1 << selected[0]) | (1 << selected[1]) | (1 << selected[3]));
+				data.emplace_back(selected);
 				network.sendData(data);
 				is_send = true;
 				break;

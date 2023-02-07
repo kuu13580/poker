@@ -71,7 +71,6 @@ string CServer::recvDataEach(int client_no) {
 void CServer::sendData(string data) {
 	// すべてのクライアントにデータ送信
 	cout << "  send：" << data << endl;
-#pragma omp parallel for
 	for (int i = 0; i < NUM_PLAYER; i++) {
 		send(client_sockets_.at(i).socket, data.c_str(), data.length(), 0);
 	}
