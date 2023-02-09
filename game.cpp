@@ -25,28 +25,28 @@ void CGameServer::startRound() {
 	initialize();
 	betAnte();
 	cout << "全初期作業完了" << endl;
-	// ベッティングラウンド1
-	cout << "ベッティングラウンド1開始" << endl;
-	bettingRound();
-	cout << "ベッティングラウンド1終了" << endl << endl;
-	//// ドローラウンド1
-	cout << "ドローラウンド1開始" << endl;
-	drawRound();
-	cout << "ドローラウンド1終了" << endl << endl;
-	//// ベッティングラウンド2
-	cout << "ベッティングラウンド2開始" << endl;
-	bettingRound();
-	cout << "ベッティングラウンド2終了" << endl << endl;
-	//// ドローラウンド2
-	cout << "ドローラウンド2開始" << endl;
-	drawRound();
-	cout << "ドローラウンド2終了" << endl << endl;
-	is_final_ = true;
+	//// ベッティングラウンド1
+	//cout << "ベッティングラウンド1開始" << endl;
+	//bettingRound();
+	//cout << "ベッティングラウンド1終了" << endl << endl;
+	////// ドローラウンド1
+	//cout << "ドローラウンド1開始" << endl;
+	//drawRound();
+	//cout << "ドローラウンド1終了" << endl << endl;
+	////// ベッティングラウンド2
+	//cout << "ベッティングラウンド2開始" << endl;
+	//bettingRound();
+	//cout << "ベッティングラウンド2終了" << endl << endl;
+	////// ドローラウンド2
+	//cout << "ドローラウンド2開始" << endl;
+	//drawRound();
+	//cout << "ドローラウンド2終了" << endl << endl;
+	//is_final_ = true;
 	//// 最終ベット
 	cout << "最終ベッティングラウンド開始" << endl;
 	bettingRound();
 	cout << "最終ベッティングラウンド終了" << endl << endl;
-	//// ショーダウン
+	// ショーダウン
 	cout << "ショーダウン" << endl;
 	showDown();
 	//// 親を移す
@@ -57,18 +57,18 @@ void CGameClient::startRound() {
 	initialize();
 	betAnte();
 	system("cls");
-	// ベッティングラウンド1
-	bettingRound();
-	//// ドローラウンド1
-	drawRound();
-	//// ベッティングラウンド2
-	bettingRound();
-	//// ドローラウンド2
-	drawRound();
-	is_final_ = true;
+	//// ベッティングラウンド1
+	//bettingRound();
+	////// ドローラウンド1
+	//drawRound();
+	////// ベッティングラウンド2
+	//bettingRound();
+	////// ドローラウンド2
+	//drawRound();
+	//is_final_ = true;
 	//// 最終ベット
 	bettingRound();
-	//// ショーダウン
+	// ショーダウン
 	showDown();
 	startRound();
 }
@@ -515,15 +515,19 @@ void CGameServer::showDown() {
 		vector<int> v = dealer::checkHand(players_.at(player_no).getHand());
 		players_power.at(player_no).insert(players_power.at(player_no).begin(), v.begin(), v.end());
 	}
-	for (int i = 0; i < players_power.size(); i++) {
-		for (int j = 0; j < players_power.at(i).size(); j++) {
-			cout << players_power.at(i).at(j) << " ";
+	// デバッグ用
+	{
+		for (auto i : players_power) {
+			for (int j : i) {
+				cout << j << " ";
+			}
 		}
+		cout << endl;
 	}
-	cout << endl;
+	cout << "pos1" << endl;
 	// 勝者を決定
-	int winners = 0;
-	int winner = 0;
+	unsigned int winners = 1; // フラグ
+	unsigned int winner = 0;
 	for (int player_no = 1; player_no < NUM_PLAYER; player_no++) {
 		vector<int> player_power = players_power.at(player_no);
 		vector<int> winner_power = players_power.at(winner);
@@ -548,18 +552,14 @@ void CGameServer::showDown() {
 			}
 		}
 	}
-
+	cout << "pos2" << endl;
 	// 賞金の計算
-	unsigned count = (winners & 0x55555555) + ((winners >> 1) & 0x55555555);
-	count = (count & 0x33333333) + ((count >> 2) & 0x33333333);
-	count = (count & 0x0f0f0f0f) + ((count >> 4) & 0x0f0f0f0f);
-	count = (count & 0x00ff00ff) + ((count >> 8) & 0x00ff00ff);
-	count = (count & 0x0000ffff) + ((count >> 16) & 0x0000ffff);
+	unsigned int count = popcount(winners);
 	int prize = total_pot_ / count;
 	for (int i = 0; i < NUM_PLAYER; i++) {
 		if (winners & (1 << i)) players_.at(i).payout(-prize);
 	}
-
+	cout << "pos3" << endl;
 	// 送信
 	vector<int> send_data;
 	for (int player_no = 0; player_no < NUM_PLAYER; player_no++) {
@@ -569,13 +569,16 @@ void CGameServer::showDown() {
 			send_data.emplace_back(network.ctoi(players_.at(player_no).getHand().at(j)));
 		}
 	}
+	cout << "pos4" << endl;
 	for (int player_no = 0; player_no < NUM_PLAYER; player_no++) {
 		send_data.emplace_back(Set_Bankroll);
 		send_data.emplace_back(player_no);
 		network.addDivideInt(send_data, players_.at(player_no).bankroll());
 	}
 	network.sendData(send_data);
+	cout << "pos5" << endl;
 	network.recvData();
+	cout << "pos6" << endl;
 	send_data = { ShowDown };
 	// players_powerは0xf0で区切る
 	send_data.emplace_back(winners);
@@ -583,8 +586,9 @@ void CGameServer::showDown() {
 		send_data.insert(send_data.end(), players_power.at(player_no).begin(), players_power.at(player_no).end());
 		send_data.emplace_back(0xf0);
 	}
+	cout << "pos7" << endl;
 	network.sendData(send_data);
-
+	cout << "pos8" << endl;
 	// 終了受信
 	network.recvData();
 }
@@ -600,19 +604,43 @@ void CGameClient::showDown() {
 		exit(0);
 	}
 	int winners = recv_data.at(1);
-	vector<vector<int>> players_power;
-	vector<int> v;
-	for (int i = 2, length = recv_data.size(); i < length; i++) {
-		if (recv_data.at(i) == 0xf0) {
-			players_power.insert(players_power.end(), v.begin(), v.end());
-			v.clear();
-			continue;
+	// デバッグ用
+	{
+		cout << "recv_data" << endl;
+		for (int data : recv_data) {
+			cout << data << " ";
 		}
-		else {
-			v.emplace_back(recv_data.at(i));
+		cout << endl;
+	}
+	vector<vector<int>> players_power(NUM_PLAYER);
+	{
+		vector<int> v;
+		auto p_itr = players_power.begin();
+		for (auto itr = recv_data.begin() + 2, e = recv_data.end(); itr != e; itr++) {
+			if (*itr == 0xf0) {
+				p_itr->insert(p_itr->end(), v.begin(), v.end());
+				cout << "vsize : " << v.size() << endl;
+				v.clear();
+				p_itr++;
+				continue;
+			}
+			else {
+				v.emplace_back(*itr);
+			}
 		}
 	}
-	system("cls");
+	//system("cls");
+	// デバッグ用
+	{
+		cout << "players_power" << endl;
+		for (auto& player_power : players_power) {
+			for (auto& power : player_power) {
+				cout << power << " ";
+			}
+			cout << endl;
+		}
+		system("pause");
+	}
 	cout << "<<< 終了 >>>" << endl;
 	cout << "ポット合計： " << total_pot_ << endl << endl;
 	for (int player_no = 0; player_no < NUM_PLAYER; player_no++) {

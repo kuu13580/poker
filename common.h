@@ -7,6 +7,7 @@
 #include <sstream>
 #include <algorithm>
 #include <bitset>
+#include <bit>
 //#include <functional>
 #include <random>
 #include <numeric>
