@@ -1,7 +1,7 @@
 # EXポーカー
 ## プレイ映像
 
-https://user-images.githubusercontent.com/46004336/217969737-68708bb3-c257-4bc8-a85c-4912b816dbee.mp4
+https://user-images.githubusercontent.com/46004336/224521599-fd4ca694-7d01-4b14-b639-ce83cec718e4.mp4
 
 ## オープンベットについて
 オープンベットシステムは手札を公開することでベット額の倍額を場代にすることができるシステムです。  
